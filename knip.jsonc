@@ -74,6 +74,8 @@
         "@napi-rs/keyring",
         "ffi-rs",
         "transcribe-cpp",
+        // Run as a CLI file found with import.meta.resolve (src/orchestry/OrchestryCli.ts).
+        "@oxgeneral/orch",
       ],
     },
     "apps/desktop": {

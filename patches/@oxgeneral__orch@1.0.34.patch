@@ -1,0 +1,16 @@
+diff --git a/dist/update-check-R5ABF6HE.js b/dist/update-check-R5ABF6HE.js
+index 6737150d84eabda37aa5367e2beab7e78cbf2d9d..00003feaacb621b9c3ae50ecf9aad5ff7dc7c9ec 100644
+--- a/dist/update-check-R5ABF6HE.js
++++ b/dist/update-check-R5ABF6HE.js
+@@ -1,2 +1,9 @@
+ #!/usr/bin/env node
+-export{d as backgroundInstall,a as checkForUpdateNow,b as checkForUpdateSWR,e as isRestartNeeded,c as printUpdateNotification}from'./chunk-EGOR4O46.js';
+\ No newline at end of file
++// Torch3: T3 Code supervises ORCH, so ORCH never checks for or installs updates itself.
++// Upstream runs `npm install -g @oxgeneral/orch@<latest>` after every command and from
++// `orch serve`. ORCH updates ship as a dependency bump in T3 Code instead.
++export const checkForUpdateNow = async () => null;
++export const checkForUpdateSWR = async () => null;
++export const printUpdateNotification = () => {};
++export const backgroundInstall = async () => false;
++export const isRestartNeeded = () => false;
