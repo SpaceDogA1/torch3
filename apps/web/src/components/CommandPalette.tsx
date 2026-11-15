@@ -79,6 +79,7 @@ import {
   SquarePenIcon,
   TextSearchIcon,
   UserPlusIcon,
+  WorkflowIcon,
 } from "lucide-react";
 import { openThreadFind } from "./chat/threadFindStore";
 import { dispatchPreviewAction } from "./preview/previewActionBus";
@@ -1630,6 +1631,17 @@ function OpenCommandPaletteDialog(props: {
   actionItems.push(changeAppearanceItem);
 
   actionItems.push(themeEditorItem);
+
+  actionItems.push({
+    kind: "action",
+    value: "action:orchestry",
+    searchTerms: ["orchestry", "orch", "agents", "team", "tasks", "multi-agent"],
+    title: "Open Orchestry",
+    icon: <WorkflowIcon className={ITEM_ICON_CLASS} />,
+    run: async () => {
+      await navigate({ to: "/orchestry" });
+    },
+  });
 
   if (environments.some((environment) => environment.serverConfig !== null)) {
     actionItems.push({
