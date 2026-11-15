@@ -15,6 +15,7 @@ import {
   AuthSourceControlWriteScope,
   AuthTerminalReadScope,
   AuthTerminalOperateScope,
+  clientRpcRequiredScopes,
   WS_METHODS,
   WsRpcGroup,
 } from "@t3tools/contracts";
@@ -43,6 +44,27 @@ describe("RPC authorization scopes", () => {
       WS_METHODS.scheduledTasksRotateWebhookToken,
     ]) {
       expect(requiredScopeForRpcMethod(method)).toBe(AuthOrchestrationOperateScope);
+    }
+  });
+
+  it("lets readers see Orchestry while starting agents or writing Git history needs more", () => {
+    expect(requiredScopeForRpcMethod(WS_METHODS.orchestryGetOverview)).toBe(
+      AuthOrchestrationReadScope,
+    );
+    for (const method of [
+      WS_METHODS.orchestryEnable,
+      WS_METHODS.orchestryStart,
+      WS_METHODS.orchestryCreateTask,
+      WS_METHODS.orchestryCreateAgent,
+    ]) {
+      expect(requiredScopeForRpcMethod(method)).toBe(AuthOrchestrationOperateScope);
+      expect(clientRpcRequiredScopes(method, undefined)).toEqual([AuthOrchestrationOperateScope]);
+    }
+    for (const method of [
+      WS_METHODS.orchestryMergeIntegration,
+      WS_METHODS.orchestrySyncIntegration,
+    ]) {
+      expect(clientRpcRequiredScopes(method, undefined)).toEqual([AuthSourceControlWriteScope]);
     }
   });
 

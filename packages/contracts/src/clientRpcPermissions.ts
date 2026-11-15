@@ -78,6 +78,26 @@ export const CLIENT_GUARDED_RPC_SCOPES = {
   [WS_METHODS.peerLinksUnlink]: AuthAccessWriteScope,
   // A link lets every agent here reach the other environment: Settings' bar.
   [WS_METHODS.peerLinksAnswerRequest]: AuthAccessWriteScope,
+  // Orchestry (ORCH) runs agents on this environment, as starting a thread does.
+  [WS_METHODS.orchestryEnable]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryDisable]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryStart]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryStop]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryCreateTask]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryAssignTask]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryCancelTask]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryRetryTask]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryApproveTask]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryRejectTask]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryCreateAgent]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryRemoveAgent]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryCreateGoal]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestrySetGoalStatus]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryCreateTeam]: AuthOrchestrationOperateScope,
+  [WS_METHODS.orchestryDisbandTeam]: AuthOrchestrationOperateScope,
+  // These write Git history: the integration branch, or the user's own checkout.
+  [WS_METHODS.orchestrySyncIntegration]: AuthSourceControlWriteScope,
+  [WS_METHODS.orchestryMergeIntegration]: AuthSourceControlWriteScope,
 } as const;
 export type ClientGuardedRpcTag = keyof typeof CLIENT_GUARDED_RPC_SCOPES;
 

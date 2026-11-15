@@ -125,6 +125,7 @@ import * as ThreadLaunchService from "./orchestration-v2/ThreadLaunchService.ts"
 import * as ThreadMessageIntake from "./orchestration-v2/ThreadMessageIntake.ts";
 import * as DocumentText from "./provider/DocumentText.ts";
 import * as ScheduledTasks from "./scheduledTasks/ScheduledTaskService.ts";
+import * as OrchestryService from "./orchestry/OrchestryService.ts";
 import * as SecretRequests from "./secrets/SecretRequests.ts";
 import * as GuestShareService from "./guest/GuestShareService.ts";
 import {
@@ -1471,6 +1472,7 @@ export const layerWsRpc = (
       const commandOutputHub = yield* CommandOutputHub.CommandOutputHub;
       const providerSessionManager = yield* ProviderSessionManager.ProviderSessionManagerV2;
       const scheduledTasks = yield* ScheduledTasks.ScheduledTaskService;
+      const orchestry = yield* OrchestryService.OrchestryService;
       const secretRequests = yield* SecretRequests.SecretRequests;
       const guestShares = yield* GuestShareService.GuestShareService;
       const pullRequests = yield* PullRequestService.PullRequestService;
@@ -2320,6 +2322,49 @@ export const layerWsRpc = (
           Effect.annotateCurrentSpan({ "scheduled_task.id": input.id }).pipe(
             Effect.andThen(scheduledTasks.getWebhookDelivery(input)),
           ),
+        [WS_METHODS.orchestryGetOverview]: (input) => orchestry.overview(input.projectId),
+        [WS_METHODS.orchestryEnable]: (input) => orchestry.enable(input.projectId, input.adapter),
+        [WS_METHODS.orchestryDisable]: (input) => orchestry.disable(input.projectId),
+        [WS_METHODS.orchestryStart]: (input) =>
+          orchestry.start(
+            input.projectId,
+            input.verbose === undefined ? {} : { verbose: input.verbose },
+          ),
+        [WS_METHODS.orchestryStop]: (input) => orchestry.stop(input.projectId),
+        [WS_METHODS.orchestrySubscribeEvents]: (input) =>
+          orchestry.events(input.projectId, input.afterSequence),
+        [WS_METHODS.orchestryListRuns]: (input) =>
+          orchestry.listRuns(input.projectId, input.taskId),
+        [WS_METHODS.orchestryCreateTask]: ({ projectId, ...task }) =>
+          orchestry.createTask(projectId, task),
+        [WS_METHODS.orchestryAssignTask]: (input) =>
+          orchestry.assignTask(input.projectId, input.taskId, input.agentId),
+        [WS_METHODS.orchestryCancelTask]: (input) =>
+          orchestry.cancelTask(input.projectId, input.taskId),
+        [WS_METHODS.orchestryRetryTask]: (input) =>
+          orchestry.retryTask(input.projectId, input.taskId),
+        [WS_METHODS.orchestryApproveTask]: (input) =>
+          orchestry.approveTask(input.projectId, input.taskId),
+        [WS_METHODS.orchestryRejectTask]: (input) =>
+          orchestry.rejectTask(input.projectId, input.taskId, input.reason),
+        [WS_METHODS.orchestryCreateAgent]: ({ projectId, ...agent }) =>
+          orchestry.createAgent(projectId, agent),
+        [WS_METHODS.orchestryRemoveAgent]: (input) =>
+          orchestry.removeAgent(input.projectId, input.agentId),
+        [WS_METHODS.orchestryCreateGoal]: ({ projectId, ...goal }) =>
+          orchestry.createGoal(projectId, goal),
+        [WS_METHODS.orchestrySetGoalStatus]: (input) =>
+          orchestry.setGoalStatus(input.projectId, input.goalId, input.status),
+        [WS_METHODS.orchestryCreateTeam]: ({ projectId, ...team }) =>
+          orchestry.createTeam(projectId, team),
+        [WS_METHODS.orchestryDisbandTeam]: (input) =>
+          orchestry.disbandTeam(input.projectId, input.teamId),
+        [WS_METHODS.orchestryGetIntegrationDiff]: (input) =>
+          orchestry.integrationDiff(input.projectId, input.path),
+        [WS_METHODS.orchestrySyncIntegration]: (input) =>
+          orchestry.syncIntegration(input.projectId),
+        [WS_METHODS.orchestryMergeIntegration]: (input) =>
+          orchestry.mergeIntegration(input.projectId),
         [WS_METHODS.serverProbe]: (_input) => Effect.succeed({}),
         [WS_METHODS.serverGetConfig]: (_input) =>
           loadServerConfig({

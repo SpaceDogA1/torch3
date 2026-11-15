@@ -385,6 +385,34 @@ import {
   ScheduledTaskUpsertInput,
   ScheduledTaskMutationResult,
 } from "./scheduledTask.ts";
+import {
+  OrchestryAgent,
+  OrchestryAgentInput,
+  OrchestryAssignTaskInput,
+  OrchestryCreateAgentInput,
+  OrchestryCreateGoalInput,
+  OrchestryCreateTaskInput,
+  OrchestryCreateTeamInput,
+  OrchestryEnableInput,
+  OrchestryError,
+  OrchestryEvent,
+  OrchestryGoal,
+  OrchestryIntegrationDiff,
+  OrchestryIntegrationDiffInput,
+  OrchestryListRunsInput,
+  OrchestryOverview,
+  OrchestryProjectInput,
+  OrchestryRejectTaskInput,
+  OrchestryRun,
+  OrchestryRuntimeStatus,
+  OrchestrySetGoalStatusInput,
+  OrchestryStartInput,
+  OrchestrySubscribeEventsInput,
+  OrchestryTask,
+  OrchestryTaskInput,
+  OrchestryTeam,
+  OrchestryTeamInput,
+} from "./orchestry.ts";
 import { SecretRequestAnswerInput, SecretRequestError } from "./secretRequest.ts";
 import {
   ProjectCloneActionInput,
@@ -562,6 +590,30 @@ export const WS_METHODS = {
   guestShareCreate: "guestShare.create",
   scheduledTasksListWebhookDeliveries: "scheduledTasks.listWebhookDeliveries",
   scheduledTasksGetWebhookDelivery: "scheduledTasks.getWebhookDelivery",
+
+  // Orchestry (ORCH)
+  orchestryGetOverview: "orchestry.getOverview",
+  orchestryEnable: "orchestry.enable",
+  orchestryDisable: "orchestry.disable",
+  orchestryStart: "orchestry.start",
+  orchestryStop: "orchestry.stop",
+  orchestrySubscribeEvents: "orchestry.subscribeEvents",
+  orchestryListRuns: "orchestry.listRuns",
+  orchestryCreateTask: "orchestry.createTask",
+  orchestryAssignTask: "orchestry.assignTask",
+  orchestryCancelTask: "orchestry.cancelTask",
+  orchestryRetryTask: "orchestry.retryTask",
+  orchestryApproveTask: "orchestry.approveTask",
+  orchestryRejectTask: "orchestry.rejectTask",
+  orchestryCreateAgent: "orchestry.createAgent",
+  orchestryRemoveAgent: "orchestry.removeAgent",
+  orchestryCreateGoal: "orchestry.createGoal",
+  orchestrySetGoalStatus: "orchestry.setGoalStatus",
+  orchestryCreateTeam: "orchestry.createTeam",
+  orchestryDisbandTeam: "orchestry.disbandTeam",
+  orchestryGetIntegrationDiff: "orchestry.getIntegrationDiff",
+  orchestrySyncIntegration: "orchestry.syncIntegration",
+  orchestryMergeIntegration: "orchestry.mergeIntegration",
 
   cloudGetRelayClientStatus: "cloud.getRelayClientStatus",
   cloudInstallRelayClient: "cloud.installRelayClient",
@@ -2091,6 +2143,139 @@ const WsScheduledTasksGetWebhookDeliveryRpc = Rpc.make(
   },
 );
 
+const WsOrchestryGetOverviewRpc = Rpc.make(WS_METHODS.orchestryGetOverview, {
+  payload: OrchestryProjectInput,
+  success: OrchestryOverview,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryEnableRpc = Rpc.make(WS_METHODS.orchestryEnable, {
+  payload: OrchestryEnableInput,
+  success: OrchestryOverview,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryDisableRpc = Rpc.make(WS_METHODS.orchestryDisable, {
+  payload: OrchestryProjectInput,
+  success: OrchestryOverview,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryStartRpc = Rpc.make(WS_METHODS.orchestryStart, {
+  payload: OrchestryStartInput,
+  success: OrchestryRuntimeStatus,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryStopRpc = Rpc.make(WS_METHODS.orchestryStop, {
+  payload: OrchestryProjectInput,
+  success: OrchestryRuntimeStatus,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestrySubscribeEventsRpc = Rpc.make(WS_METHODS.orchestrySubscribeEvents, {
+  payload: OrchestrySubscribeEventsInput,
+  success: OrchestryEvent,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+  stream: true,
+});
+
+const WsOrchestryListRunsRpc = Rpc.make(WS_METHODS.orchestryListRuns, {
+  payload: OrchestryListRunsInput,
+  success: Schema.Array(OrchestryRun),
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryCreateTaskRpc = Rpc.make(WS_METHODS.orchestryCreateTask, {
+  payload: OrchestryCreateTaskInput,
+  success: OrchestryTask,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryAssignTaskRpc = Rpc.make(WS_METHODS.orchestryAssignTask, {
+  payload: OrchestryAssignTaskInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryCancelTaskRpc = Rpc.make(WS_METHODS.orchestryCancelTask, {
+  payload: OrchestryTaskInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryRetryTaskRpc = Rpc.make(WS_METHODS.orchestryRetryTask, {
+  payload: OrchestryTaskInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryApproveTaskRpc = Rpc.make(WS_METHODS.orchestryApproveTask, {
+  payload: OrchestryTaskInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryRejectTaskRpc = Rpc.make(WS_METHODS.orchestryRejectTask, {
+  payload: OrchestryRejectTaskInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryCreateAgentRpc = Rpc.make(WS_METHODS.orchestryCreateAgent, {
+  payload: OrchestryCreateAgentInput,
+  success: OrchestryAgent,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryRemoveAgentRpc = Rpc.make(WS_METHODS.orchestryRemoveAgent, {
+  payload: OrchestryAgentInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryCreateGoalRpc = Rpc.make(WS_METHODS.orchestryCreateGoal, {
+  payload: OrchestryCreateGoalInput,
+  success: OrchestryGoal,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestrySetGoalStatusRpc = Rpc.make(WS_METHODS.orchestrySetGoalStatus, {
+  payload: OrchestrySetGoalStatusInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryCreateTeamRpc = Rpc.make(WS_METHODS.orchestryCreateTeam, {
+  payload: OrchestryCreateTeamInput,
+  success: OrchestryTeam,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryDisbandTeamRpc = Rpc.make(WS_METHODS.orchestryDisbandTeam, {
+  payload: OrchestryTeamInput,
+  success: Schema.Void,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryGetIntegrationDiffRpc = Rpc.make(WS_METHODS.orchestryGetIntegrationDiff, {
+  payload: OrchestryIntegrationDiffInput,
+  success: OrchestryIntegrationDiff,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestrySyncIntegrationRpc = Rpc.make(WS_METHODS.orchestrySyncIntegration, {
+  payload: OrchestryProjectInput,
+  success: OrchestryOverview,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
+const WsOrchestryMergeIntegrationRpc = Rpc.make(WS_METHODS.orchestryMergeIntegration, {
+  payload: OrchestryProjectInput,
+  success: OrchestryOverview,
+  error: Schema.Union([OrchestryError, EnvironmentAuthorizationError]),
+});
+
 const WsSubscribeAuthAccessRpc = Rpc.make(WS_METHODS.subscribeAuthAccess, {
   payload: Schema.Struct({}),
   success: AuthAccessStreamEvent,
@@ -2181,6 +2366,28 @@ export const WsRpcGroup = RpcGroup.make(
   WsSecretsAnswerRequestRpc,
   WsScheduledTasksListWebhookDeliveriesRpc,
   WsScheduledTasksGetWebhookDeliveryRpc,
+  WsOrchestryGetOverviewRpc,
+  WsOrchestryEnableRpc,
+  WsOrchestryDisableRpc,
+  WsOrchestryStartRpc,
+  WsOrchestryStopRpc,
+  WsOrchestrySubscribeEventsRpc,
+  WsOrchestryListRunsRpc,
+  WsOrchestryCreateTaskRpc,
+  WsOrchestryAssignTaskRpc,
+  WsOrchestryCancelTaskRpc,
+  WsOrchestryRetryTaskRpc,
+  WsOrchestryApproveTaskRpc,
+  WsOrchestryRejectTaskRpc,
+  WsOrchestryCreateAgentRpc,
+  WsOrchestryRemoveAgentRpc,
+  WsOrchestryCreateGoalRpc,
+  WsOrchestrySetGoalStatusRpc,
+  WsOrchestryCreateTeamRpc,
+  WsOrchestryDisbandTeamRpc,
+  WsOrchestryGetIntegrationDiffRpc,
+  WsOrchestrySyncIntegrationRpc,
+  WsOrchestryMergeIntegrationRpc,
   WsServerReportClientActivityRpc,
   WsCloudGetRelayClientStatusRpc,
   WsCloudInstallRelayClientRpc,
