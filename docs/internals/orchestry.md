@@ -68,3 +68,24 @@ outcome is `agent:completed`'s `success` field.
   check that `cli.js` and `serve-*.js` still import update logic only from it.
 - **No install script.** ORCH's `postinstall` rewrites files in `node_modules/ink` and installs
   a Claude Code skill into the user's home directory. `allowBuilds` keeps it disabled.
+
+## Packaging
+
+ORCH ships as `@oxgeneral/orch` in `apps/server` dependencies and is run, never imported, so the
+server bundle never sees it. Release stages (desktop sidecar, CLI and WSL runtime archives) install it
+through `CLI_SIDE_PROCESS_PACKAGES` in
+[`cli-external-packages.ts`](../../scripts/lib/cli-external-packages.ts): pnpm installs its whole
+dependency closure, the update-check patch applies, and `allowBuilds` keeps its install script off.
+Listing it as a runtime external instead would require every transitive dependency of ORCH to be
+external as well.
+
+## Upgrading ORCH
+
+1. Bump the version in `apps/server/package.json` and the `overrides` pin in `pnpm-workspace.yaml`.
+2. Re-read ORCH's `cli/update-check.ts`, `bin/cli.ts` and `cli/commands/serve.ts`. Find the bundled
+   update-check module in `dist/` (its hash changes per build) and confirm `cli.js` and `serve-*.js`
+   still import update logic only from it.
+3. Regenerate `patches/@oxgeneral__orch@<version>.patch` and rename its `patchedDependencies` key.
+4. Re-check the behaviors this integration depends on: merge-before-review in `orchestrator.ts`,
+   `init`'s Git side effects, the lock file format, and the `--json` output of `status`, `goal list`,
+   `team list` and `logs`. Run `apps/server/src/orchestry` tests.
