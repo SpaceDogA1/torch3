@@ -207,6 +207,9 @@ describe("OrchestryService", () => {
           yield* git(repository, ["branch", "--list", "t3-orchestry/service-project"]),
         ).toContain("t3-orchestry/service-project");
       }).pipe(Effect.provide(makeLayer(repository)));
-    }).pipe(Effect.provide(ProcessRunner.layer), Effect.provide(NodeServices.layer), Effect.scoped),
+    }).pipe(
+      Effect.provide(ProcessRunner.layer.pipe(Layer.provideMerge(NodeServices.layer))),
+      Effect.scoped,
+    ),
   );
 });
