@@ -17,7 +17,6 @@ import { useState, type ReactNode } from "react";
 
 import { requestConfirmDialog } from "../../confirmDialog";
 import { orchestryEnvironment } from "../../state/orchestry";
-import { useAtomCommand } from "../../state/use-atom-command";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -43,6 +42,7 @@ import {
   orchestryErrorMessage,
   statusVariant,
 } from "./orchestryPresentation";
+import { useOrchestryCommand } from "./useOrchestryCommand";
 
 interface SectionProps {
   readonly target: OrchestryTarget;
@@ -97,7 +97,7 @@ function StatusBadge({ status }: { readonly status: string }) {
 const agentName = (agents: ReadonlyArray<OrchestryAgent>, id: string | null) =>
   id === null ? "Unassigned" : (agents.find((agent) => agent.id === id)?.name ?? id);
 
-/** Runs a command with a busy flag; failures are toasted by `useAtomCommand`. */
+/** Runs a command with a busy flag; `useOrchestryCommand` toasts failures. */
 function useBusy() {
   const [busy, setBusy] = useState(false);
   const run = async (work: () => Promise<unknown>) => {
@@ -182,11 +182,11 @@ export function TasksSection({ target, overview }: SectionProps) {
 }
 
 function TaskRow({ target, overview, task }: SectionProps & { readonly task: OrchestryTask }) {
-  const assign = useAtomCommand(orchestryEnvironment.assignTask, { label: "Assign task" });
-  const cancel = useAtomCommand(orchestryEnvironment.cancelTask, { label: "Cancel task" });
-  const retry = useAtomCommand(orchestryEnvironment.retryTask, { label: "Retry task" });
-  const approve = useAtomCommand(orchestryEnvironment.approveTask, { label: "Approve task" });
-  const reject = useAtomCommand(orchestryEnvironment.rejectTask, { label: "Reject task" });
+  const assign = useOrchestryCommand(orchestryEnvironment.assignTask, "Assign task");
+  const cancel = useOrchestryCommand(orchestryEnvironment.cancelTask, "Cancel task");
+  const retry = useOrchestryCommand(orchestryEnvironment.retryTask, "Retry task");
+  const approve = useOrchestryCommand(orchestryEnvironment.approveTask, "Approve task");
+  const reject = useOrchestryCommand(orchestryEnvironment.rejectTask, "Reject task");
   const [busy, run] = useBusy();
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
@@ -334,6 +334,7 @@ function FormDialog({
     >
       <DialogPopup className="max-w-lg">
         <form
+          className="flex min-h-0 flex-col"
           onSubmit={async (event) => {
             event.preventDefault();
             if (!canSubmit || busy) return;
@@ -377,7 +378,7 @@ function CreateTaskDialog({
   overview,
   onClose,
 }: SectionProps & { readonly onClose: () => void }) {
-  const create = useAtomCommand(orchestryEnvironment.createTask, { label: "Create task" });
+  const create = useOrchestryCommand(orchestryEnvironment.createTask, "Create task");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [assigneeId, setAssigneeId] = useState("");
@@ -476,7 +477,7 @@ function CreateTaskDialog({
 
 export function AgentsSection({ target, overview }: SectionProps) {
   const [creating, setCreating] = useState(false);
-  const remove = useAtomCommand(orchestryEnvironment.removeAgent, { label: "Remove agent" });
+  const remove = useOrchestryCommand(orchestryEnvironment.removeAgent, "Remove agent");
   const [busy, run] = useBusy();
   return (
     <Section
@@ -573,7 +574,7 @@ function CreateAgentDialog({
   readonly target: OrchestryTarget;
   readonly onClose: () => void;
 }) {
-  const create = useAtomCommand(orchestryEnvironment.createAgent, { label: "Create agent" });
+  const create = useOrchestryCommand(orchestryEnvironment.createAgent, "Create agent");
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [model, setModel] = useState("");
@@ -650,7 +651,7 @@ function CreateAgentDialog({
 
 export function TeamsSection({ target, overview }: SectionProps) {
   const [creating, setCreating] = useState(false);
-  const disband = useAtomCommand(orchestryEnvironment.disbandTeam, { label: "Disband team" });
+  const disband = useOrchestryCommand(orchestryEnvironment.disbandTeam, "Disband team");
   const [busy, run] = useBusy();
   const teams = overview.teams.filter((team) => team.status !== "disbanded");
   return (
@@ -723,7 +724,7 @@ function CreateTeamDialog({
   overview,
   onClose,
 }: SectionProps & { readonly onClose: () => void }) {
-  const create = useAtomCommand(orchestryEnvironment.createTeam, { label: "Create team" });
+  const create = useOrchestryCommand(orchestryEnvironment.createTeam, "Create team");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<ReadonlyArray<string>>([]);
@@ -781,7 +782,7 @@ const GOAL_STATUSES: ReadonlyArray<OrchestryGoalStatus> = [
 
 export function GoalsSection({ target, overview }: SectionProps) {
   const [creating, setCreating] = useState(false);
-  const setStatus = useAtomCommand(orchestryEnvironment.setGoalStatus, { label: "Update goal" });
+  const setStatus = useOrchestryCommand(orchestryEnvironment.setGoalStatus, "Update goal");
   const [busy, run] = useBusy();
   return (
     <Section
@@ -853,7 +854,7 @@ function CreateGoalDialog({
   readonly target: OrchestryTarget;
   readonly onClose: () => void;
 }) {
-  const create = useAtomCommand(orchestryEnvironment.createGoal, { label: "Create goal" });
+  const create = useOrchestryCommand(orchestryEnvironment.createGoal, "Create goal");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   return (
@@ -1016,11 +1017,9 @@ export function ActivitySection({ target }: { readonly target: OrchestryTarget }
 }
 
 export function ReviewSection({ target, overview }: SectionProps) {
-  const sync = useAtomCommand(orchestryEnvironment.syncIntegration, {
-    label: "Sync integration branch",
-  });
-  const merge = useAtomCommand(orchestryEnvironment.mergeIntegration, { label: "Merge ORCH work" });
-  const disable = useAtomCommand(orchestryEnvironment.disable, { label: "Disable Orchestry" });
+  const sync = useOrchestryCommand(orchestryEnvironment.syncIntegration, "Sync integration branch");
+  const merge = useOrchestryCommand(orchestryEnvironment.mergeIntegration, "Merge ORCH work");
+  const disable = useOrchestryCommand(orchestryEnvironment.disable, "Disable Orchestry");
   const [showDiff, setShowDiff] = useState(false);
   const [busy, run] = useBusy();
   const integration = overview.integration;
@@ -1086,7 +1085,10 @@ export function ReviewSection({ target, overview }: SectionProps) {
       </Section>
       <Section title={`Changed files · ${integration.files.length}`}>
         {integration.files.length === 0 ? (
-          <EmptySection title="No changes" description="ORCH has not merged any work yet." />
+          <EmptySection
+            title="Nothing to merge"
+            description="Your branch already has all of ORCH's work."
+          />
         ) : (
           <Table>
             <TableHeader>
@@ -1117,7 +1119,13 @@ export function ReviewSection({ target, overview }: SectionProps) {
             </TableBody>
           </Table>
         )}
-        {showDiff ? <IntegrationDiff target={target} /> : null}
+        {showDiff && integration.files.length > 0 ? (
+          // A new key remounts the query whenever the branch moves, so a merge never leaves a stale patch.
+          <IntegrationDiff
+            key={`${integration.ahead}:${integration.behind}:${integration.files.length}`}
+            target={target}
+          />
+        ) : null}
       </Section>
       <Section title="Turn off">
         <div className="flex flex-wrap items-center gap-3">

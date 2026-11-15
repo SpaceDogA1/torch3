@@ -15,7 +15,6 @@ import { useState } from "react";
 import { readEnvironmentScope } from "../../state/session";
 import { useProjects } from "../../state/entities";
 import { orchestryEnvironment } from "../../state/orchestry";
-import { useAtomCommand } from "../../state/use-atom-command";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -26,6 +25,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Toggle, ToggleGroup } from "../ui/toggle-group";
 import { WorkspacePageContainer } from "../WorkspacePageContainer";
 import { ADAPTER_OPTIONS, orchestryErrorMessage, runtimeBadge } from "./orchestryPresentation";
+import { useOrchestryCommand } from "./useOrchestryCommand";
 import {
   ActivitySection,
   AgentsSection,
@@ -211,8 +211,8 @@ function RuntimeBar({
   readonly target: OrchestryTarget;
   readonly overview: OrchestryOverview;
 }) {
-  const start = useAtomCommand(orchestryEnvironment.start, { label: "Start ORCH" });
-  const stop = useAtomCommand(orchestryEnvironment.stop, { label: "Stop ORCH" });
+  const start = useOrchestryCommand(orchestryEnvironment.start, "Start ORCH");
+  const stop = useOrchestryCommand(orchestryEnvironment.stop, "Stop ORCH");
   const [busy, setBusy] = useState(false);
   const { status } = overview;
   const badge = runtimeBadge(status.state);
@@ -275,7 +275,7 @@ function RuntimeBar({
 }
 
 function EnableOrchestry({ target }: { readonly target: OrchestryTarget }) {
-  const enable = useAtomCommand(orchestryEnvironment.enable, { label: "Enable Orchestry" });
+  const enable = useOrchestryCommand(orchestryEnvironment.enable, "Enable Orchestry");
   const [adapter, setAdapter] = useState<OrchestryAgentAdapter>("claude");
   const [busy, setBusy] = useState(false);
   return (
