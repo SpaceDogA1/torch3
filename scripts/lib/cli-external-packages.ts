@@ -51,11 +51,23 @@ export function shouldBundleCliDependency(id: string): boolean {
   return !isExternalCliDependency(id);
 }
 
+/**
+ * Packages the server runs as their own process from their installed files and never imports.
+ * Stages install them with their whole dependency closure (and patches), but the bundle never
+ * sees them, so they are not runtime externals and their dependencies need not be listed.
+ */
+const CLI_SIDE_PROCESS_PACKAGES: ReadonlySet<string> = new Set([
+  // ORCH: apps/server/src/orchestry/OrchestryCli.ts runs its dist/cli.js.
+  "@oxgeneral/orch",
+]);
+
 export function selectCliRuntimeExternalDependencies(
   dependencies: Readonly<Record<string, string>>,
 ): Record<string, string> {
   return Object.fromEntries(
-    Object.entries(dependencies).filter(([name]) => isRuntimeExternalCliDependency(name)),
+    Object.entries(dependencies).filter(
+      ([name]) => isRuntimeExternalCliDependency(name) || CLI_SIDE_PROCESS_PACKAGES.has(name),
+    ),
   );
 }
 

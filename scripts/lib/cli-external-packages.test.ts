@@ -170,6 +170,16 @@ it.layer(NodeServices.layer)("external package dependency closure", (it) => {
   );
 });
 
+describe("selectCliRuntimeExternalDependencies", () => {
+  it("stages ORCH, which runs as its own process, without making it a bundler external", () => {
+    assert.deepStrictEqual(
+      selectCliRuntimeExternalDependencies({ "@oxgeneral/orch": "1.0.34", effect: "4.1.3" }),
+      { "@oxgeneral/orch": "1.0.34" },
+    );
+    assert.strictEqual(isRuntimeExternalCliDependency("@oxgeneral/orch"), false);
+  });
+});
+
 describe("findInlinedExternalPackages", () => {
   const region = (path: string) => `//#region ${path}
 var x = 1;
