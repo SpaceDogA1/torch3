@@ -102,11 +102,7 @@ function useBusy() {
   const [busy, setBusy] = useState(false);
   const run = async (work: () => Promise<unknown>) => {
     setBusy(true);
-    try {
-      await work();
-    } finally {
-      setBusy(false);
-    }
+    await work().finally(() => setBusy(false));
   };
   return [busy, run] as const;
 }
