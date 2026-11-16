@@ -4,6 +4,7 @@ import { describe, expect, it } from "vite-plus/test";
 
 import {
   detectComposerTrigger,
+  parseOrchestryCommand,
   parseSideChatCommand,
   serializeComposerFileLink,
 } from "./composerTrigger.ts";
@@ -135,5 +136,20 @@ describe("parseSideChatCommand", () => {
     expect(parseSideChatCommand("/sidebar")).toBeNull();
     expect(parseSideChatCommand("/btwx")).toBeNull();
     expect(parseSideChatCommand("ask /side later")).toBeNull();
+  });
+});
+
+describe("parseOrchestryCommand", () => {
+  it("splits the task title from a multi-line description", () => {
+    expect(parseOrchestryCommand("/orch")).toEqual({ title: "", description: "" });
+    expect(parseOrchestryCommand("/ORCH Add login\n- use the existing session store\n")).toEqual({
+      title: "Add login",
+      description: "- use the existing session store",
+    });
+  });
+
+  it("ignores other commands and inline mentions", () => {
+    expect(parseOrchestryCommand("/orchestra")).toBeNull();
+    expect(parseOrchestryCommand("ask /orch later")).toBeNull();
   });
 });

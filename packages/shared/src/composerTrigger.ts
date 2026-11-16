@@ -182,3 +182,14 @@ export function parseSideChatCommand(text: string): { prompt: string } | null {
   const match = /^\/(?:side|btw)(?:\s+([\s\S]*))?$/i.exec(text.trim());
   return match ? { prompt: match[1]?.trim() ?? "" } : null;
 }
+
+/** `/orch <task>` as the whole message: the first line is the ORCH task title, the rest its description. */
+export function parseOrchestryCommand(text: string): { title: string; description: string } | null {
+  const match = /^\/orch(?:\s+([\s\S]*))?$/i.exec(text.trim());
+  if (!match) return null;
+  const body = match[1]?.trim() ?? "";
+  const newline = body.indexOf("\n");
+  return newline === -1
+    ? { title: body, description: "" }
+    : { title: body.slice(0, newline).trim(), description: body.slice(newline + 1).trim() };
+}

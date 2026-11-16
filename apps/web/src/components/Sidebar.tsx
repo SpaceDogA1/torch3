@@ -1270,6 +1270,9 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                   ]
                 : []),
               { id: "project-settings", label: "Project settings", icon: "settings" },
+              ...(group.memberProjectRefs.length > 0
+                ? [{ id: "orchestry", label: "Orchestry" }]
+                : []),
             ],
             position,
           ),
@@ -1289,6 +1292,16 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
           case "project-settings":
             openProjectSettings(group);
             return;
+          case "orchestry": {
+            const ref = group.memberProjectRefs[0];
+            if (ref === undefined) return;
+            if (isMobile) setOpenMobile(false);
+            void router.navigate({
+              to: "/orchestry",
+              search: { environmentId: ref.environmentId, projectId: ref.projectId },
+            });
+            return;
+          }
         }
       })();
     },

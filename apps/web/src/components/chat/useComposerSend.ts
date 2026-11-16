@@ -1,4 +1,8 @@
-import { isClearComposerCommand, parseSideChatCommand } from "@t3tools/shared/composerTrigger";
+import {
+  isClearComposerCommand,
+  parseOrchestryCommand,
+  parseSideChatCommand,
+} from "@t3tools/shared/composerTrigger";
 import { armFreshSession, disarmFreshSession, readFreshSessionArm } from "./freshSessionArms";
 import {
   mergeDirectPreviewAnnotation,
@@ -118,6 +122,8 @@ import { appAtomRegistry } from "../../rpc/atomRegistry";
 import { fileAttachmentCapabilityBlockReason } from "./composerAttachmentFiles";
 import { useLinkedEnvironments } from "../../state/peerLinks";
 import { readEnvironmentScope } from "../../state/session";
+import { orchestryEnvironment } from "../../state/orchestry";
+import { useOrchestryCommand } from "../orchestry/useOrchestryCommand";
 import { useOrchestrationCommand } from "../../state/use-orchestration-command";
 import {
   ATTACHMENT_ONLY_BOOTSTRAP_PROMPT,
@@ -376,6 +382,11 @@ export function useComposerSend(input: ComposerSendInput) {
     respondingRequestIdsRef.current = respondingRequestIds;
   }, [pendingApprovals, respondingRequestIds]);
 
+  const createOrchestryTask = useOrchestryCommand(
+    orchestryEnvironment.createTask,
+    "Queue ORCH task",
+  );
+
   const onSend = async (
     e?: { preventDefault: () => void },
     dispatchMode: ComposerDispatchMode = "auto",
@@ -400,6 +411,39 @@ export function useComposerSend(input: ComposerSendInput) {
         promptRef.current = "";
         setComposerDraftPrompt(composerDraftTarget, "");
         composerRef.current?.resetCursorState();
+      }
+      return;
+    }
+
+    // `/orch <task>` queues an ORCH task in this project instead of messaging the thread's agent.
+    const orchestryCommand =
+      !directAnnotation && !queuedRunEdit.isEditing ? parseOrchestryCommand(promptAtSend) : null;
+    if (orchestryCommand !== null && activeProject) {
+      if (orchestryCommand.title.length === 0) {
+        toastManager.add({
+          type: "info",
+          title: "Describe the task after /orch",
+          description: "The first line becomes the task title; later lines its description.",
+        });
+        return;
+      }
+      const result = await createOrchestryTask({
+        environmentId,
+        input: {
+          projectId: activeProject.id,
+          title: orchestryCommand.title,
+          ...(orchestryCommand.description ? { description: orchestryCommand.description } : {}),
+        },
+      });
+      if (result._tag === "Success") {
+        promptRef.current = "";
+        setComposerDraftPrompt(composerDraftTarget, "");
+        composerRef.current?.resetCursorState();
+        toastManager.add({
+          type: "success",
+          title: "Queued for ORCH",
+          description: `"${orchestryCommand.title}" is waiting in Orchestry. Assign an agent and start ORCH there.`,
+        });
       }
       return;
     }

@@ -53,7 +53,11 @@ import * as Schema from "effect/Schema";
 import { formatComposerModelMention } from "@t3tools/client-runtime/composer-model-mentions";
 import { isPasteAsTextShortcut } from "@t3tools/client-runtime/text-paste";
 import { scopedThreadKey, scopeThreadRef } from "@t3tools/client-runtime/environment";
-import { parseSideChatCommand, serializeComposerFileLink } from "@t3tools/shared/composerTrigger";
+import {
+  parseOrchestryCommand,
+  parseSideChatCommand,
+  serializeComposerFileLink,
+} from "@t3tools/shared/composerTrigger";
 import { type FolderDropTarget, folderDropTarget, resolveDroppedFolderPath } from "./folderDrop";
 import { splitTransferredFiles } from "./workspaceFileDrop";
 import { createModelSelection, normalizeModelSlug } from "@t3tools/shared/model";
@@ -1942,6 +1946,13 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
         if (applied) setComposerHighlightedItemId(null);
         return;
       }
+      if (item.command === "orch") {
+        const applied = applyPromptReplacement(trigger.rangeStart, trigger.rangeEnd, "/orch ", {
+          expectedText: snapshot.value.slice(trigger.rangeStart, trigger.rangeEnd),
+        });
+        if (applied) setComposerHighlightedItemId(null);
+        return;
+      }
       return;
     }
     if (item.type === "provider-slash-command") {
@@ -3734,10 +3745,13 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                     compact={isComposerPrimaryActionsCompact}
                     canOperateThread={canOperateThread}
                     pendingAction={pendingPrimaryAction}
-                    // A side-chat command starts a side chat; it never queues or steers the turn.
+                    // A side-chat or /orch command never queues or steers the turn.
                     isRunning={
                       (phase === "running" || phase === "connecting") &&
-                      !(props.sideChatAvailable === true && parseSideChatCommand(prompt) !== null)
+                      !(
+                        props.sideChatAvailable === true && parseSideChatCommand(prompt) !== null
+                      ) &&
+                      parseOrchestryCommand(prompt) === null
                     }
                     canInterrupt={canInterrupt}
                     runId={activeThread?.runtime?.activeRunId ?? null}

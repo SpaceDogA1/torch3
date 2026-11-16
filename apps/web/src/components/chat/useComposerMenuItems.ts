@@ -271,6 +271,13 @@ export function useComposerMenuItems({
               },
             ] as const)
           : []),
+        {
+          id: "slash:orch",
+          type: "slash-command",
+          command: "orch",
+          label: "/orch",
+          description: "Queue this as a task for the project's ORCH team",
+        },
       ] satisfies ReadonlyArray<Extract<ComposerCommandItem, { type: "slash-command" }>>;
       const slashMenuSkills = getProviderSkillsForSlashMenu(
         selectedProviderSkills,
