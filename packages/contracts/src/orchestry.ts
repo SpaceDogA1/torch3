@@ -174,6 +174,8 @@ export const OrchestryOverview = Schema.Struct({
   projectId: ProjectId,
   /** ORCH has been set up for this project (its integration worktree exists). */
   enabled: Schema.Boolean,
+  /** Why ORCH cannot be enabled for this project, when it is off; null when it can be. */
+  blockedReason: Schema.NullOr(Schema.String),
   status: OrchestryRuntimeStatus,
   agents: Schema.Array(OrchestryAgent),
   tasks: Schema.Array(OrchestryTask),

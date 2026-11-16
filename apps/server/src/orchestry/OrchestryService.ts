@@ -385,9 +385,16 @@ export const make = Effect.gen(function* () {
       const found = yield* project(projectId);
       const status = yield* runtime.status(projectId);
       if (!(yield* isEnabled(projectId))) {
+        const blockedReason = yield* workspace
+          .checkProject(found.workspaceRoot)
+          .pipe(
+            Effect.as(null),
+            Effect.catchTags({ OrchestryWorkspaceError: (error) => Effect.succeed(error.detail) }),
+          );
         return {
           projectId,
           enabled: false,
+          blockedReason,
           status,
           agents: [],
           tasks: [],
@@ -410,6 +417,7 @@ export const make = Effect.gen(function* () {
       return {
         projectId,
         enabled: true,
+        blockedReason: null,
         status,
         agents: records(state.agents).map(toOrchestryAgent),
         tasks: records(state.tasks).map(toOrchestryTask),

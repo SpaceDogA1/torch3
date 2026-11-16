@@ -172,7 +172,9 @@ function ProjectOrchestry({
     );
   }
   const overview = result.value;
-  if (!overview.enabled) return <EnableOrchestry target={target} />;
+  if (!overview.enabled) {
+    return <EnableOrchestry target={target} blockedReason={overview.blockedReason} />;
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -274,7 +276,13 @@ function RuntimeBar({
   );
 }
 
-function EnableOrchestry({ target }: { readonly target: OrchestryTarget }) {
+function EnableOrchestry({
+  target,
+  blockedReason,
+}: {
+  readonly target: OrchestryTarget;
+  readonly blockedReason: string | null;
+}) {
   const enable = useOrchestryCommand(orchestryEnvironment.enable, "Enable Orchestry");
   const [adapter, setAdapter] = useState<OrchestryAgentAdapter>("claude");
   const [busy, setBusy] = useState(false);
@@ -288,6 +296,12 @@ function EnableOrchestry({ target }: { readonly target: OrchestryTarget }) {
           subscriptions when they run.
         </EmptyDescription>
       </EmptyHeader>
+      {blockedReason !== null ? (
+        <Alert variant="warning">
+          <AlertTitle>This project can't run ORCH</AlertTitle>
+          <AlertDescription>{blockedReason}</AlertDescription>
+        </Alert>
+      ) : null}
       <div className="flex items-center gap-2">
         <Select
           value={adapter}
@@ -307,7 +321,7 @@ function EnableOrchestry({ target }: { readonly target: OrchestryTarget }) {
           </SelectPopup>
         </Select>
         <Button
-          disabled={busy || !target.canOperate}
+          disabled={busy || !target.canOperate || blockedReason !== null}
           onClick={async () => {
             setBusy(true);
             await enable({

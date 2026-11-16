@@ -88,6 +88,13 @@ export class OrchestryWorkspace extends Context.Service<
       | OrchestryCli.OrchestryUnsupportedHostError
       | OrchestryCli.OrchestryArgumentError
     >;
+    /**
+     * Whether ORCH can run on this checkout: the root of its own Git repository with a commit.
+     * Read-only; returns the repository's common Git directory.
+     */
+    readonly checkProject: (
+      workspaceRoot: string,
+    ) => Effect.Effect<string, OrchestryWorkspaceError>;
     /** Fails when ORCH's config, an agent, or an unfinished task asks for a non-worktree mode. */
     readonly validateIsolation: (
       integrationRoot: string,
@@ -229,40 +236,63 @@ export const make = Effect.gen(function* () {
     if (violations.length > 0) return yield* new OrchestryIsolationError({ violations });
   });
 
+  const checkProject: OrchestryWorkspace["Service"]["checkProject"] = Effect.fn(
+    "OrchestryWorkspace.checkProject",
+  )(function* (workspaceRoot) {
+    // A folder inside some other repository (even a home directory under Git) is not
+    // the project: ORCH would operate on, and commit to, that enclosing repository.
+    const topLevel = yield* git(
+      workspaceRoot,
+      ["rev-parse", "--show-toplevel"],
+      "not-a-git-repository",
+    ).pipe(
+      Effect.mapError(
+        () =>
+          new OrchestryWorkspaceError({
+            reason: "not-a-git-repository",
+            detail: `${workspaceRoot} is not a Git repository. Run git init there and make a first commit.`,
+          }),
+      ),
+    );
+    const [realTopLevel, realRoot] = yield* Effect.all([
+      fileSystem.realPath(topLevel),
+      fileSystem.realPath(workspaceRoot),
+    ]).pipe(
+      Effect.mapError(
+        (cause) =>
+          new OrchestryWorkspaceError({
+            reason: "not-a-git-repository",
+            detail: `${workspaceRoot} could not be resolved.`,
+            cause,
+          }),
+      ),
+    );
+    if (!samePath(realTopLevel, realRoot)) {
+      return yield* new OrchestryWorkspaceError({
+        reason: "not-repository-root",
+        detail: `${workspaceRoot} is inside the Git repository at ${topLevel}, not its root. ORCH needs the project to be a repository of its own.`,
+      });
+    }
+    const projectCommonDir = yield* commonDir(workspaceRoot, "not-a-git-repository");
+    yield* git(
+      workspaceRoot,
+      ["rev-parse", "--verify", "--quiet", "HEAD^{commit}"],
+      "no-commits",
+    ).pipe(
+      Effect.mapError(
+        () =>
+          new OrchestryWorkspaceError({
+            reason: "no-commits",
+            detail: `${workspaceRoot} has no commits yet. Make a first commit, then enable Orchestry.`,
+          }),
+      ),
+    );
+    return projectCommonDir;
+  });
+
   const ensureIntegrationWorktree = Effect.fn("OrchestryWorkspace.ensureIntegrationWorktree")(
     function* (workspaceRoot: string, target: OrchestryWorkspacePaths) {
-      // A folder inside some other repository (even a home directory under Git) is not
-      // the project: ORCH would operate on, and commit to, that enclosing repository.
-      const topLevel = yield* git(
-        workspaceRoot,
-        ["rev-parse", "--show-toplevel"],
-        "not-a-git-repository",
-      );
-      const [realTopLevel, realRoot] = yield* Effect.all([
-        fileSystem.realPath(topLevel),
-        fileSystem.realPath(workspaceRoot),
-      ]).pipe(
-        Effect.mapError(
-          (cause) =>
-            new OrchestryWorkspaceError({
-              reason: "not-a-git-repository",
-              detail: `${workspaceRoot} could not be resolved.`,
-              cause,
-            }),
-        ),
-      );
-      if (!samePath(realTopLevel, realRoot)) {
-        return yield* new OrchestryWorkspaceError({
-          reason: "not-repository-root",
-          detail: `${workspaceRoot} is inside the Git repository at ${topLevel}, not its root. ORCH needs the project to be a repository of its own.`,
-        });
-      }
-      const projectCommonDir = yield* commonDir(workspaceRoot, "not-a-git-repository");
-      yield* git(
-        workspaceRoot,
-        ["rev-parse", "--verify", "--quiet", "HEAD^{commit}"],
-        "no-commits",
-      );
+      const projectCommonDir = yield* checkProject(workspaceRoot);
 
       const exists = yield* fileSystem
         .exists(target.integrationRoot)
@@ -341,7 +371,7 @@ export const make = Effect.gen(function* () {
     },
   );
 
-  return OrchestryWorkspace.of({ paths, prepare, validateIsolation });
+  return OrchestryWorkspace.of({ paths, prepare, checkProject, validateIsolation });
 });
 
 export const layer = Layer.effect(OrchestryWorkspace, make);

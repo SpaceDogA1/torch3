@@ -133,7 +133,9 @@ describe("OrchestryService", () => {
         const cli = yield* OrchestryCli.OrchestryCli;
         const workspace = yield* OrchestryWorkspace.OrchestryWorkspace;
 
-        assert.isFalse((yield* service.overview(projectId)).enabled);
+        const before = yield* service.overview(projectId);
+        assert.isFalse(before.enabled);
+        assert.isNull(before.blockedReason, "an eligible repository can be enabled");
         const notEnabled = yield* service.start(projectId).pipe(Effect.flip);
         assert.strictEqual(notEnabled.reason, "not-enabled");
 
