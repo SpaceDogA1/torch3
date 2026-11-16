@@ -1,4 +1,7 @@
-# T3 Code docs
+# Torch3 docs
+
+Torch3 is T3 Code with [Orchestry](./user/orchestry.md) built in. Most guides below are T3 Code's
+and apply unchanged; where they say T3 Code, read Torch3.
 
 ## Using T3 Code
 

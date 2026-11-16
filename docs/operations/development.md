@@ -234,6 +234,9 @@ script, so on Windows open the workspace through WSL.
 
 Use `vp run lint:mobile` for native mobile changes. CI owns the full suite; see
 [ci.yml](../../.github/workflows/ci.yml) for its current jobs.
+Torch3's workflows run on GitHub-hosted runners (`ubuntu-24.04`, `ubuntu-24.04-arm`,
+`macos-latest`, `windows-2025`), not upstream's Blacksmith runners. The mobile, release, and relay
+workflows still need signing, Expo, and Cloudflare secrets this repository does not have.
 The [manual Windows lane](../../.github/workflows/windows-tests.yml) is available for focused
 Windows investigation while that suite is not a required gate.
 

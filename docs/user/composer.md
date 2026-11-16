@@ -299,6 +299,9 @@ earlier messages, and the thread marks where it began with **New session**.
 Earlier messages and diffs stay in the thread. Dismiss the notice above the
 composer to keep the current session instead.
 
+Start a message with `/orch` to queue it as a task for the project's ORCH team instead of sending
+it to the thread's agent. See [Orchestry](./orchestry.md#queue-a-task-from-a-thread).
+
 On web and desktop, turn on **Context window** in **Settings → Appearance →
 Thread details** to see context usage in the thread details card. It appears
 once the provider reports usage.

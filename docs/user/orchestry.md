@@ -4,15 +4,20 @@ Orchestry runs [ORCH](https://github.com/oxgeneral/ORCH) on a project: teams of 
 tasks, work in parallel in their own Git worktrees, and merge their results. ORCH's agents work on a
 separate **integration branch**. Nothing reaches your checkout until you merge it yourself.
 
-Open **Orchestry** from the sidebar or the command palette.
+You can reach Orchestry from:
+
+- the **Orchestry** button at the bottom of the sidebar, or the command palette;
+- a project's right-click menu in the sidebar, which opens Orchestry on that project;
+- the composer: send `/orch` followed by a task to queue it for the project's ORCH team.
 
 ## Turn it on for a project
 
 Pick the project, choose a default provider, and select **Enable Orchestry**. The project must be the
-root of its own Git repository with at least one commit; a folder inside another repository is
-refused.
+root of its own Git repository with at least one commit. If it is not, for example a folder inside
+another repository or a repository with no commits, the page says why and **Enable Orchestry** stays
+off until you fix it.
 
-Enabling creates a branch named `t3-orchestry/<project id>` and a worktree for it in your T3 Code data
+Enabling creates a branch named `t3-orchestry/<project id>` and a worktree for it in your Torch3 data
 folder. Its first commit adds `.orchestry` to `.gitignore`. ORCH also creates a default
 **Agent Creator** agent on the provider you chose.
 
@@ -32,6 +37,19 @@ agent left uncommitted is lost.
 
 **Activity** shows ORCH's events while the runtime runs on this server. **Runs** lists the last 30
 days of agent runs from ORCH's own history.
+
+## Queue a task from a thread
+
+In any thread of a project with Orchestry on, start the message with `/orch`:
+
+```text
+/orch Add a remove(id) method
+Cover it with tests and keep the existing API unchanged.
+```
+
+The first line becomes the task title and the rest its description. The message is not sent to the
+thread's agent: it becomes an unassigned `todo` task, and a notice confirms it was queued. Assign
+an agent to it in Orchestry and start ORCH there. `/orch` works only at the start of a message.
 
 ## Review and merge
 
@@ -53,12 +71,14 @@ The integration branch and its commits stay in your repository.
 
 ## Troubleshooting
 
-- **"Running outside T3"**: an ORCH process this server did not start holds the project's lock, for
-  example one you ran with `orch serve` in a terminal. Stop it there; T3 Code never stops it for you.
+- **"This project can't run ORCH"**: open the repository's root folder as the project instead of a
+  subfolder, or run `git init` and make a first commit in the folder.
+- **"Running outside T3"**: an ORCH process this server did not start holds the project's lock,
+  for example one you ran with `orch serve` in a terminal. Stop it there; Torch3 never stops it for
+  you.
 - **"ORCH stopped unexpectedly"**: the runtime exited on its own. The message shows ORCH's last
   output. Select **Start** to run it again; unfinished tasks are retried.
-- **Enabling fails with "not its root"**: open the repository's root folder as the project instead
-  of a subfolder.
+- **`/orch` says "Orchestry is not enabled for this project"**: enable it for the thread's project first.
 - **Merge refused**: commit or stash your changes, or switch your checkout to a branch, then merge
   again.
-- **The single-file `t3` executable** cannot run ORCH. Use the desktop app or `npx t3`.
+- **The single-file `t3` executable** cannot run ORCH. Use the desktop app or run from source.
