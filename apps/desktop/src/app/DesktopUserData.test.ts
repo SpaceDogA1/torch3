@@ -7,7 +7,7 @@ import * as PlatformError from "effect/PlatformError";
 
 import { clearStaleGpuCaches, resolveUserDataPath } from "./DesktopUserData.ts";
 
-it.effect.each(["t3code", "T3 Code (Alpha)"])(
+it.effect.each(["Torch3 (Legacy)"])(
   "preserves Windows credential keys from %s without copying browser databases",
   (sourceName) =>
     Effect.gen(function* () {
@@ -15,9 +15,8 @@ it.effect.each(["t3code", "T3 Code (Alpha)"])(
       const path = yield* Path.Path;
       const directory = yield* fs.makeTempDirectoryScoped({ prefix: "t3-v2-profile-" });
       const source = path.join(directory, sourceName);
-      const destination = path.join(directory, "t3code-v2");
+      const destination = path.join(directory, "torch3");
       const state = '{"os_crypt":{"encrypted_key":"test-encrypted-key"}}';
-      yield* fs.makeDirectory(path.join(directory, "T3 Code (Alpha)"), { recursive: true });
       yield* fs.makeDirectory(path.join(source, "IndexedDB"), { recursive: true });
       yield* fs.writeFileString(path.join(source, "Local State"), state);
       yield* fs.writeFileString(path.join(source, "IndexedDB", "LOCK"), "V1 owns this database");
@@ -39,6 +38,25 @@ it.effect.each(["t3code", "T3 Code (Alpha)"])(
         yield* fs.readFileString(path.join(destination, "Local State")),
         "existing V2 state",
       );
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+);
+
+it.effect.each(["t3code", "T3 Code (Alpha)", "t3code-v2"])(
+  "never adopts T3 Code's %s profile keys on Windows",
+  (sourceName) =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const directory = yield* fs.makeTempDirectoryScoped({ prefix: "torch3-profile-" });
+      yield* fs.makeDirectory(path.join(directory, sourceName), { recursive: true });
+      yield* fs.writeFileString(path.join(directory, sourceName, "Local State"), "{}");
+      const resolved = yield* resolveUserDataPath({
+        appDataDirectory: directory,
+        isDevelopment: false,
+        platform: "win32",
+      });
+      assert.equal(resolved, path.join(directory, "torch3"));
+      assert.isFalse(yield* fs.exists(path.join(directory, "torch3", "Local State")));
     }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
 );
 
