@@ -61,7 +61,7 @@ const SERVICE = {
   supported: true,
   installed: true,
   current: true,
-  unitPath: "/home/me/.config/systemd/user/t3code.service",
+  unitPath: "/home/me/.config/systemd/user/torch3.service",
   logPath: "/home/me/.t3/userdata/logs/boot-service.log",
 } as const;
 

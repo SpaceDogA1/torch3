@@ -546,7 +546,7 @@ it.layer(NodeServices.layer)("t3 update with a background service", (it) => {
       yield* fs.makeDirectory(runtime.versionDir, { recursive: true });
       yield* fs.writeFileString(runtime.entryPath, "");
       yield* fs.writeFileString(runtime.sentinelPath, `${version}\n`);
-      const unitPath = path.join(baseDir, "t3code.service");
+      const unitPath = path.join(baseDir, "torch3.service");
       const logPath = path.join(baseDir, "boot-service.log");
       // An earlier `t3 update` pointed the service at this version without restarting it.
       const service = Layer.mock(BootService.BootService, {

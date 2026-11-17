@@ -104,7 +104,7 @@ export function renderBootServiceUnit(plan: BootServicePlan): string {
   // The user manager has no reliable network-online target; server networking retries itself.
   return [
     "[Unit]",
-    "Description=T3 Code server",
+    "Description=Torch3 server",
     "StartLimitIntervalSec=300",
     "StartLimitBurst=5",
     "",
@@ -230,7 +230,7 @@ export function renderBootServiceTask(
   return [
     `<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">`,
     `  <RegistrationInfo>`,
-    `    <Description>T3 Code server</Description>`,
+    `    <Description>Torch3 server</Description>`,
     `  </RegistrationInfo>`,
     `  <Triggers>`,
     `    <LogonTrigger>`,
@@ -304,7 +304,7 @@ const defaultSystemdUnitDir = (path: Path.Path, homeDir: string, xdgConfigHome: 
   );
 
 const scheduledTaskPath = (path: Path.Path, localAppData: string) =>
-  path.join(localAppData, "t3code", BOOT_SERVICE_TASK_FILE);
+  path.join(localAppData, "torch3", BOOT_SERVICE_TASK_FILE);
 
 const launchdPlistPath = (path: Path.Path, homeDir: string) =>
   path.join(homeDir, "Library", "LaunchAgents", BOOT_SERVICE_PLIST_FILE);
@@ -638,7 +638,7 @@ export class BootServiceInstallError extends Schema.TaggedError<BootServiceInsta
   { cause: Schema.Defect() },
 ) {
   override get message(): string {
-    return "Could not set up the T3 Code background service.";
+    return "Could not set up the Torch3 background service.";
   }
 }
 
@@ -665,11 +665,11 @@ export function formatBootServiceProblem(
     case "linger-unavailable":
       return 'Cannot check whether this user can run services after logout. Run `loginctl show-user "$(id -un)" --property=Linger` and check that systemd-logind is available.';
     case "linger-disabled":
-      return 'Lingering is disabled. T3 Code will stop when your last login session ends and will not start at boot. Run `sudo loginctl enable-linger "$(id -un)"` on this machine, then retry the service command as your normal user.';
+      return 'Lingering is disabled. Torch3 will stop when your last login session ends and will not start at boot. Run `sudo loginctl enable-linger "$(id -un)"` on this machine, then retry the service command as your normal user.';
     case "service-disabled":
       return `The service is not enabled to start automatically. Run \`${commands.install}\` to repair it.`;
     case "service-stopped":
-      return `The service is not running. Check the service log (on Linux, also \`systemctl --user status t3code.service\`), then run \`${commands.install}\`.`;
+      return `The service is not running. Check the service log (on Linux, also \`systemctl --user status torch3.service\`), then run \`${commands.install}\`.`;
     case "restart-pending":
       return `A newer version is installed but the service is still running the previous one. Run \`${commands.restart}\` to switch.`;
   }
@@ -719,7 +719,7 @@ export class BootServiceOtherBaseDirError extends Schema.TaggedError<BootService
   },
 ) {
   override get message(): string {
-    return `The T3 Code service on this machine serves ${this.installedBaseDir}, not ${this.baseDir}. Pass ${formatBootServiceBaseDirOption(this.installedBaseDir)} to manage it, or run \`t3 service uninstall ${formatBootServiceBaseDirOption(this.installedBaseDir)}\` first to move it; both data directories are kept.`;
+    return `The Torch3 service on this machine serves ${this.installedBaseDir}, not ${this.baseDir}. Pass ${formatBootServiceBaseDirOption(this.installedBaseDir)} to manage it, or run \`t3 service uninstall ${formatBootServiceBaseDirOption(this.installedBaseDir)}\` first to move it; both data directories are kept.`;
   }
 
   // A refusal the user fixes by rerunning, so the CLI prints the message, not a stack trace.
@@ -733,7 +733,7 @@ export class BootServiceBaseDirUnsupportedError extends Schema.TaggedError<BootS
   { baseDir: Schema.String },
 ) {
   override get message(): string {
-    return `systemd cannot run T3 Code from ${JSON.stringify(this.baseDir)}: the path contains a quote, backslash or control character. Choose another T3 home with --base-dir.`;
+    return `systemd cannot run Torch3 from ${JSON.stringify(this.baseDir)}: the path contains a quote, backslash or control character. Choose another T3 home with --base-dir.`;
   }
 
   override get [CliError.userMessage]() {
