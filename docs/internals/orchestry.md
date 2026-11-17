@@ -17,7 +17,7 @@ branch its project root has checked out, before review and whatever the approval
 (`orchestrator.ts`, `_handleRunSuccess`). `orch task approve` only flips a status afterwards.
 
 So each project gets an **integration worktree** of its own repository, on branch
-`t3-orchestry/<project>`, at `<T3 home>/orchestry/<project>/workspace`. ORCH's project root,
+`t3-orchestry/<project>`, at `<Torch3 home>/orchestry/<project>/workspace`. ORCH's project root,
 `.orchestry/` state, task worktrees and merges all live there. The user's checkout is only read.
 Bringing the integration branch into the user's branch is a separate, explicit T3 operation.
 
@@ -43,7 +43,7 @@ uncommitted is deleted. A `shell` agent must commit its own changes.
 ORCH is started as `<node> --import <stop preload> <@oxgeneral/orch>/dist/cli.js serve
 --log-format json` with an argument array, from `HostProcess.ExecutablePath` with
 `ELECTRON_RUN_AS_NODE=1` so the desktop's Electron binary behaves as Node. The single-file
-`t3` executable has no Node to run ORCH's files and reports an unsupported host.
+`torch3` executable has no Node to run ORCH's files and reports an unsupported host.
 
 ORCH shuts down gracefully (cancels its agents' runs, releases its lock) only from its
 SIGINT/SIGTERM handler, and Windows cannot deliver those to a child: `kill` is

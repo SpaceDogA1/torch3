@@ -1,15 +1,14 @@
 # Pi
 
-T3 Code can use your existing Pi coding agent installation while keeping Pi's models, auth,
-extensions, skills, context files, and native session history.
+Torch3 runs your existing Pi coding agent and keeps Pi's models, auth, extensions, skills, context files, and native session history.
 
-## Set Up Pi
+## Set up Pi
 
-1. Install [Pi](https://pi.dev) on the machine running the T3 Code server. Pi requires Node.js
-   22.19 or newer; its platform installers can install Node if needed. T3 Code supports Pi
+1. Install [Pi](https://pi.dev) on the machine running the Torch3 server. Pi requires Node.js
+   22.19 or newer; its platform installers can install Node if needed. Torch3 supports Pi
    0.84.3 or newer.
 2. Run `pi` in a terminal, then `/login` to connect your model provider or configure its API key.
-3. Open T3 Code Settings, enable Pi, and refresh the provider.
+3. Open Torch3 **Settings → Providers**, enable Pi, and refresh the provider.
 
 For an npm installation, use:
 
@@ -19,76 +18,85 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
 If `pi` is not on the server's `PATH`, set Pi's binary path to the executable. Provider environment
 variables and launch arguments are also available for installations that need a custom agent
-directory, endpoint, or model configuration. `--provider` must be paired with `--model`. T3 Code
-rejects launch arguments that change Pi's execution mode or select a session because T3 owns those
-parts of the process lifecycle.
+directory, endpoint, or model configuration.
 
-On a remote or headless server, connect to that machine over SSH and run `pi`, then `/login`.
-Open the authorization URL on your own computer. If the callback cannot reach the server,
-paste the final redirect URL or authorization code back into Pi when prompted. You can also
-set your model provider's API-key environment variable in the Pi instance's settings; mark
-secret values as sensitive.
+> [!NOTE]
+> `--provider` must be paired with `--model`. Torch3 rejects launch arguments that change Pi's
+> execution mode or select a session, because Torch3 manages those parts of the process.
+
+### Sign in on a remote or headless server
+
+Connect to that machine over SSH, run `pi`, then `/login`. Open the authorization URL on your own
+computer. If the callback cannot reach the server, paste the final redirect URL or authorization
+code back into Pi when prompted.
+
+You can also set your model provider's API-key environment variable in the Pi instance's settings.
+Mark secret values as sensitive.
+
+### Update Pi
 
 Update installer-managed Pi with `pi update`. If another package manager owns the installation,
 update it through that manager instead. For example, a Nix profile installation uses
 `nix profile upgrade pi`.
 
-## What Carries Over
+## What carries over
 
-T3 Code discovers the models reported by Pi and exposes their supported thinking levels. The
-thinking picker marks the discovered active model's configured level as its default without
-overriding it. Other models keep their Pi defaults when no level is selected. A model that lists
-`serviceTiers` (for example `[{ "id": "priority", "name": "Fast" }]`) in its Pi definition gets
-a speed picker with Standard plus those tiers. A chosen tier is sent as the request's
-`service_tier`; Standard sends none and leaves the endpoint's default. Threads
-use Pi's native session files for resume, rollback, and forks within the same Pi instance. Forks
-preserve the native conversation through the selected turn in the destination workspace.
-Switching providers uses portable conversation context. Extension
-dialogs appear in the T3 Code composer, and the thread details context window follows Pi's own usage
-reporting while a response streams and after it settles.
+- **Models and thinking levels.** Torch3 lists the models Pi reports and their supported thinking
+  levels. The active model's configured level is marked as its default; other models keep their Pi
+  defaults when no level is selected.
+- **Speed tiers.** A model that lists `serviceTiers` (for example
+  `[{ "id": "priority", "name": "Fast" }]`) in its Pi definition gets a speed picker with Standard
+  plus those tiers. A chosen tier is sent as the request's `service_tier`; Standard leaves the
+  endpoint's default.
+- **Sessions.** Threads use Pi's native session files for resume, rollback, and forks within the
+  same Pi instance. Forks keep the native conversation through the selected turn. Switching
+  providers uses portable conversation context.
+- **Context window.** The thread details context window follows Pi's own usage reporting.
+- **Skills.** User and project skills that Pi loads for the workspace appear in the composer's `$`
+  menu and use Pi's native skill expansion.
+- **Extensions.** Pi loads its user extensions, and project extensions once the folder is trusted in
+  Pi. Blocking `select`, `confirm`, `input`, and `editor` dialogs appear in the composer,
+  notifications appear in the work log, and extensions can show status text near the composer.
+  Terminal titles and generic widgets have no Torch3 equivalent.
 
-Pi skills appear in the composer's `$` menu. This includes user skills and project skills that Pi
-loads for the current workspace; selecting one uses Pi's native skill expansion.
+## Permission modes
 
-Pi loads its normal user extensions, and project extensions once the folder is trusted in Pi.
-Blocking `select`, `confirm`, `input`, and `editor` dialogs work in T3 Code. Notifications appear in
-the work log. Extensions can publish status text near the composer. Terminal titles and generic
-widgets do not have a T3 Code equivalent.
+Torch3 applies the composer permission mode through Pi's blocking tool hook:
 
-## Permission Modes
+| Mode                  | Behavior                                                                      |
+| --------------------- | ----------------------------------------------------------------------------- |
+| **Supervised**        | Asks before commands, file changes, and extension tools. Read-only tools run. |
+| **Auto-accept edits** | Allows Pi's edit and write tools; asks before commands and extension tools.   |
+| **Full access**       | Allows tools without approval prompts.                                        |
 
-T3 Code applies the composer permission mode through Pi's blocking tool hook:
+**Auto** is not offered because Pi has no AI approval reviewer. Threads that stored Auto earlier
+behave and display as Supervised.
 
-- **Supervised** asks before commands, file changes, and extension tools. Read-only tools continue.
-- **Auto-accept edits** allows Pi's edit and write tools, but asks before commands and extension
-  tools.
-- **Full access** allows tools without T3 Code approval prompts.
+Changing the mode restarts the Pi session and resumes the same native conversation.
 
-The **Auto** option is not shown for Pi because Pi does not expose an AI approval reviewer.
-Threads that already stored Auto before Pi support was added behave and display as Supervised.
+> [!WARNING]
+> The permission mode covers Pi tool calls only. It is not an operating-system sandbox, and code a
+> trusted Pi extension runs outside a tool call is governed by Pi's own extension trust model.
 
-Changing the mode restarts the Pi provider session and resumes the same native conversation. The
-policy covers Pi tool calls; it is not an operating-system sandbox, and code that a trusted Pi
-extension runs outside a tool call remains governed by Pi's own extension trust model.
+## Subagents
 
-T3 Code's `delegate_task` tool creates durable child threads in the shared subagent UI. If the user
-installs Pi's example `subagent` extension, T3 Code also shows its task progress and results in that
-UI. Pi runs those children without a session, so they cannot be opened or resumed as T3 Code
-threads.
+The `delegate_task` tool creates durable child threads in the shared subagent view. If you install
+Pi's example `subagent` extension, Torch3 also shows its task progress and results there. Pi runs
+those children without a session, so they cannot be opened or resumed as threads.
 
 ## Troubleshooting
 
-- If Pi is unavailable, confirm that the configured binary runs on the server machine, then refresh
+- **Pi is unavailable.** Confirm that the configured binary runs on the server machine, then refresh
   the provider in Settings.
-- If no models appear, open Pi directly and confirm its authentication and model configuration.
-- If discovery cannot complete, T3 Code keeps Pi available with the `Pi default` model. Start a
+- **No models appear.** Open Pi directly and confirm its authentication and model configuration.
+- **Discovery cannot complete.** Torch3 keeps Pi available with the `Pi default` model. Start a
   thread to let the interactive Pi session handle any startup prompt.
-- If Pi skips project settings, extensions, skills, prompts, MCP servers, or system prompt files
-  because the folder is not trusted, the thread shows a notice on the first turn of the Pi session.
-  Run the configured Pi binary in that folder on the server machine, using the same provider
-  environment, including `PI_CODING_AGENT_DIR` if set. Trust the folder or its parent with `/trust`,
-  then start a new thread using that same worktree. Launch arguments with `--no-approve` keep
+- **Folder not trusted.** If Pi skips project settings, extensions, skills, prompts, MCP servers, or
+  system prompt files because the folder is untrusted, the thread shows a notice on its first Pi
+  turn. Run the configured Pi binary in that folder on the server machine with the same provider
+  environment, including `PI_CODING_AGENT_DIR` if set. Trust the folder or its parent with
+  `/trust`, then start a new thread in the same worktree. Launch arguments with `--no-approve` keep
   project files off without the notice.
-- To see context usage on web and desktop, turn on **Context window** in **Settings → Appearance →
-  Thread details**. It appears once Pi reports usage for the thread. Some model providers only
-  report usage when a response completes, so it can wait for the first reply.
+- **No context usage shown.** Turn on **Context window** in **Settings → Appearance → Thread
+  details**. It appears once Pi reports usage; some model providers only report it when a response
+  completes.

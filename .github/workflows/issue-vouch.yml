@@ -21,6 +21,8 @@ concurrency:
 
 jobs:
   label:
+    # Upstream contribution policy; does not run in forks such as Torch3.
+    if: github.repository == 'pingdotgg/t3code'
     name: Label issues by author trust
     runs-on: ubuntu-24.04
     steps:

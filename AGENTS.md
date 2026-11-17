@@ -1,66 +1,77 @@
-# T3 Code
+# Torch3
 
-T3 Code is a minimal GUI for coding agents. A Node WebSocket server wraps provider CLIs and agents (Codex, Claude Code, Cursor, Grok, OpenCode, Antigravity, Kiro, Pi, Muse Code, fx) and serves web, desktop, and mobile clients.
+Torch3 is a fork of [T3 Code](https://github.com/pingdotgg/t3code), a minimal GUI for coding agents, with [ORCH](https://github.com/oxgeneral/ORCH) multi-agent orchestration built in as **Orchestry**. A Node WebSocket server wraps provider CLIs and agents (Codex, Claude Code, Cursor, Grok, OpenCode, Antigravity, Kiro, Pi, Muse Code, fx) and serves web and desktop clients. T3 owns the interface, auth, transport and the user's checkout; ORCH owns teams of agents, tasks, goals and its own state.
 
-You can think of T3 Code as an open source "bring-your-own-subscription" alternative to apps like Claude Desktop, Codex App, Cursor Glass and Conductor.
+Think of Torch3 as an open "bring-your-own-subscription" alternative to Claude Desktop, Codex App, Cursor Glass and Conductor, where one prompt can become work for a whole team of agents.
 
-## What makes T3 Code special?
+## What Torch3 never compromises on
 
-We have over 500,000 users who love T3 Code. It's important we maintain the things they love as we continue to iterate on the product. Here's a brief list of the things we can never compromise on.
+Torch3 inherits T3 Code's values. Keep them.
 
 ### 1. Open at the core
 
-T3 Code is truly open. We share our roadmap, we share how we think about things, and of course we share all our code. A large number of our users run forks. We work in the open, and should strive to stay that way.
+All code, decisions and plans are public. Upstream T3 Code is open for the same reason, and Torch3 exists because it is.
 
 ### 2. Performance without compromise
 
-Lots of apps have gotten bogged down with bad tech decisions and "slop". We have not, and we're proud of the performance of T3 Code. We regularly audit for performance regressions, often caused by sending too much data over websockets, css animations causing gpu spikes, lists being hard to render, and more. Make sure all changes are considerate of performance impact.
+Audit every change for performance: too much data over websockets, CSS animations that spike the GPU, lists that render everything. Orchestry adds live event streams and diffs; keep them bounded.
 
 ### 3. Remote ready
 
-The architecture of T3 Code's websocket layer (`t3`) enables a lot of awesome remote features. These have become core to the product. Whether users are connecting directly over their local network, using Tailscale, or leaning in fully with T3 Connect (our tunnel solution, also in this repo), we need to make sure new features are properly supported.
+The websocket layer lets users drive Torch3 from another machine over their local network or Tailscale. New features must work remotely. T3 Connect (upstream's hosted relay) is not available in Torch3 builds.
 
 ### 4. Multi-surface
 
-T3 Code has 3 key app surfaces: **web**, **desktop**, and **mobile**.
+Torch3 ships **web** (served by the `torch3` command, `npx torch3`) and **desktop** (Electron, bundling the server). There is no Torch3 mobile app yet; mobile code stays in sync with upstream so one can ship later. Features belong in shared code (`packages/client-runtime`) where both surfaces can use them.
 
-**Web** is kind of two surfaces, as we have the public facing "app.t3.codes" as well as locally hosting the web app through the `t3` command. Both need to be supported by all new features where reasonable.
+## On taste
 
-**Desktop** is the main surface most users install first. It's a full Electron app that bundles the server runner as well. The desktop app can also be used as the host server, allowing remote connections from app.t3.codes or the mobile app.
+Upstream T3 Code's maintainers put it well, and it applies here unchanged:
 
-**Mobile** is a React Native app for both iOS and Android, available on the App Store and Google Play. The mobile app allows for connecting to any T3 Code server to control work remotely.
+> I like ambitious ideas, simple systems, and software that feels obvious. Do not preserve complexity just because it already exists. Do not introduce machinery because it looks architecturally impressive. Understand the real constraint, then fight for the smallest model that makes the correct behavior unsurprising.
+>
+> Channel both "measure twice, cut once" and "yagni". Fight scope creep. Try to honor the dev's intent in both a minimal and realistic fashion.
 
-## A note from Theo
+The rest of this document helps you navigate the codebase and make changes. Treat it as good defaults; the developer's preferences override anything here.
 
-I like ambitious ideas, simple systems, and software that feels obvious. Do not preserve complexity just because it already exists. Do not introduce machinery because it looks architecturally impressive. Understand the real constraint, then fight for the smallest model that makes the correct behavior unsurprising.
-
-Channel both "measure twice, cut once" and "yagni". Fight scope creep. Try to honor the dev's intent in both a minimal and realistic fashion.
-
-The rest of this document is meant to help you navigate the codebase and make changes effectively. Think of these instructions less as "hard rules", more as "good defaults". The developer's preferences should be able to override anything here.
-
-Of note: Most T3 Code contributions will come from T3 Code itself, often controlled remotely. This means you should be careful about accessing data, killing dev servers, and other things that may damage the T3 Code instance that the contributor is using.
+Of note: most Torch3 work is done from inside Torch3 or T3 Code, often remotely. Be careful about accessing data, killing dev servers, and anything that could damage the instance the developer is using right now.
 
 ## A small glossary
 
 We need to be on the same page with terminology. When communicating, use this language:
 
-- **you** means the agent reading this file and changing T3 Code.
-- **we, us, and maintainers** mean Theo, Julius and the people building T3 Code. These are who you are talking to now.
-- **user** means the person using T3 Code to direct coding agents.
-- **agent** means the coding agent a user runs inside T3 Code. Depending on context, that may also include you.
-- **provider** means the agent runtime or harness T3 Code talks to, such as Codex, Claude, Cursor, or OpenCode.
+- **you** means the agent reading this file and changing Torch3.
+- **we, us, and maintainers** mean the people building Torch3. These are who you are talking to now.
+- **upstream** means T3 Code at `pingdotgg/t3code`, the `upstream` git remote.
+- **user** means the person using Torch3 to direct coding agents.
+- **agent** means the coding agent a user runs inside Torch3. Depending on context, that may also include you.
+- **provider** means the agent runtime or harness Torch3 talks to, such as Codex, Claude, Cursor, or OpenCode.
 - **client** means the web, desktop, or mobile UI.
-- **environment** means one running T3 server and the machine, filesystem, provider credentials, and state it owns.
+- **environment** means one running Torch3 server and the machine, filesystem, provider credentials, and state it owns.
 - **project** means an environment-local workspace record rooted at a directory.
 - **thread** means the durable conversation and work history for a project.
 - **turn** means one user-to-agent cycle, including follow-up work such as checkpointing.
-- **T3 home** means the base data directory. Runtime state normally lives below its userdata directory.
+- **Orchestry** means the ORCH integration: one ORCH runtime per enabled project, working on an integration branch in its own worktree.
+- **T3 home** means the base data directory, `~/.torch3` by default. Runtime state normally lives below its userdata directory.
 
 ## The three ways to hurt yourself
 
 1. **Killing by pattern.** Never `pkill -f`, `pgrep | kill`, or `kill` a PID you found by matching a name, path, or worktree string. Your own agent process has this worktree's path in its argv, and this machine runs several other dev servers at once. Kill only a PID you captured at spawn, or the owner of your port from `ss -H -ltnp` after confirming `/proc/<pid>/cwd` is your worktree.
-2. **Writing to the live install.** `~/.t3/userdata` is the developer's real T3 Code database, in use while you work. Reading it and copying from it are fine, and a good way to get real test data (see Test data). Never start a server against it, never open it read-write, never clean it up.
+2. **Writing to a live install.** Two real databases may be in use while you work: `~/.torch3/userdata` (the developer's installed Torch3) and `~/.t3/userdata` (their installed T3 Code, which Torch3 must never touch). Reading and copying are fine, and a good way to get real test data (see Test data). Never start a server against either, never open them read-write, never clean them up. The `t3` CLI on PATH may be T3 Code's: it targets `~/.t3`, so never run it to pair, add projects or change settings for Torch3.
 3. **Baking in origins.** Never set `VITE_HTTP_URL` or `VITE_WS_URL` for dev. Dev is single-origin and Vite proxies `/api`, `/ws`, `/oauth`, and `/.well-known`. Setting them bakes localhost into the bundle and silently breaks every remote browser.
+
+## Torch3 rules
+
+These exist because Torch3 is a fork that must stay mergeable with upstream and must never interfere with an installed T3 Code.
+
+1. **Two products, two homes.** Torch3's data lives in `~/.torch3` (app ID `dev.torch3.app`, Electron profile `torch3`, service `torch3`). T3 Code's lives in `~/.t3`. Never make Torch3 read, migrate or import T3 Code's data, profiles, safeStorage keys or services, and never register the `t3code://` scheme with the OS from Torch3. New paths and identifiers follow the same split.
+2. **Rename what users see, keep what code shares.** User-visible text says Torch3. Internal names stay upstream's so merges stay clean: `T3CODE_*` env vars, the in-app `t3code://` renderer scheme, `@t3tools/*` packages, `t3_*` MCP tools, the worktree-local `.t3` folder. Changing one of these needs a reason stronger than branding.
+3. **Keep the fork diff small.** Torch3-only code lives in `apps/server/src/orchestry/`, `apps/server/src/mcp/toolkits/orchestry/`, `apps/web/src/components/orchestry/`, `packages/client-runtime/src/state/orchestry.ts`, `packages/contracts/src/orchestry.ts`, `scripts/build-torch3-npm.ts` and `.github/workflows/torch3-release.yml`. Touch upstream files only where a feature needs a hook, and keep those edits minimal. See [TORCH3.md](TORCH3.md) for syncing with upstream.
+4. **ORCH stays on a leash.** Worktree mode only, no shared workspace mode. Never merge agent work into the user's branch automatically; merging is an explicit user action. ORCH never updates itself (the pnpm patch stubs its update check) and its install script never runs (`allowBuilds`). Upgrade ORCH only by following [docs/internals/orchestry.md](docs/internals/orchestry.md#upgrading-orch).
+5. **Projects must be their own repository.** Orchestry refuses a folder that is not the root of its own Git repository with a commit, and the UI says why before Enable. Keep that check ahead of anything that would run `orch init`.
+6. **Releases are deliberate.** Releases come from `.github/workflows/torch3-release.yml` (a `vX.Y.Z` tag or a manual run). Installers are unsigned. The npm package is `torch3`, built by `scripts/build-torch3-npm.ts`; it runs on the host Node so ORCH works under `npx`. Never tag, release or publish unless the maintainer asks.
+7. **CI runs on GitHub-hosted runners.** Do not reintroduce upstream's Blacksmith runner labels or `useblacksmith/*` actions; jobs would queue forever.
+8. **Windows hosts.** The maintainer develops on Windows. From Git Bash, do not run `cmd //c ...` in a session that also runs the dev server: console control events can stop it. Use PowerShell for links and junctions.
 
 ## Hit every surface
 
@@ -79,7 +90,7 @@ The most common defect in this repo is a change that works on the path you teste
 
 - `vp i` installs. Worktrees get this from the t3.json setup script; if module resolution looks broken, it probably did not run.
 - Setup runs in the background. While `.t3/setup-running` names a live PID, wait for it and do not run `vp i`. It ends with `.t3/setup-done` or `.t3/setup-failed` (with the error tail). With no marker at all, setup never ran here, so run `vp i` yourself.
-- `vp run dev` starts server and web. In a worktree, state defaults to that worktree's gitignored `.t3`, which deliberately outranks an ambient `T3CODE_HOME` so you cannot land on shared state by accident. An explicit `--home-dir` still wins.
+- `vp run dev` starts server and web. In the main checkout, state defaults to `~/.torch3` (dev servers use `~/.torch3/dev`). In a worktree, state defaults to that worktree's gitignored `.t3`, which deliberately outranks an ambient `T3CODE_HOME` so you cannot land on shared state by accident. An explicit `--home-dir` still wins.
 - Ports derive from the worktree path and are stable across restarts, but read the real ones from the `[dev-runner]` line since occupied ports shift.
 - Sharing over the tailnet is three steps: run `vp run dev --share` in the background, wait for the `pairingUrl:` line in its output, then give that full URL to an unpaired browser. Do not wire up `tailscale serve` by hand, open the URL yourself, or consume the user's pairing link. A browser with the reusable dev cookie can use the bare origin. If a normal one-time token was consumed, mint a fresh one with `node apps/server/src/bin.ts pair`. It carries standard scopes, while the startup URL carries admin scopes needed for Connections settings.
 - To reuse web dev auth across worktrees, configure one fixed `T3CODE_DEV_AUTH_TOKEN` in the main checkout's gitignored `.env`. The `t3.json` setup links that file into worktrees. Never commit or publish the token or a startup URL. See [Reusable dev credential](docs/operations/development.md#reusable-dev-credential).
@@ -145,7 +156,7 @@ For mobile verification, a missing or outdated native client is an install step,
 
 ## Evals
 
-`evals/` checks how real models behave with T3 Code's model-facing text: agent instructions, MCP tool descriptions and schemas, and generated titles. Before you change that text, read [evals/README.md](evals/README.md) and run the evals it names. When you fix a model behavior bug, add a case that fails before the fix.
+`evals/` checks how real models behave with Torch3's model-facing text: agent instructions, MCP tool descriptions and schemas, and generated titles. Before you change that text, read [evals/README.md](evals/README.md) and run the evals it names. When you fix a model behavior bug, add a case that fails before the fix.
 
 ## Pull requests
 
@@ -156,7 +167,7 @@ For mobile verification, a missing or outdated native client is an install step,
 - UI changes need before/after images. Motion or timing needs a short video.
 - Upload PR evidence to GitHub. Never commit PR-only screenshots or assets such as `.github/pr-assets/`.
 - One request is one PR. Split it only when the maintainer asks. Outside contributions follow the stricter [one problem per PR](CONTRIBUTING.md#one-problem) rule.
-- When babysitting: call `watch_pull_request` and end your turn. T3 Code wakes you on checks, comments, or conflicts. Do not poll or sleep. Verify each bot finding against the source, fix real ones, dismiss false positives with a written reason. Stay quiet when nothing is new. Stop when the bots are green on the latest commit.
+- When babysitting: call `watch_pull_request` and end your turn. The app wakes you on checks, comments, or conflicts. Do not poll or sleep. Verify each bot finding against the source, fix real ones, dismiss false positives with a written reason. Stay quiet when nothing is new. Stop when the bots are green on the latest commit.
 
 ## Documentation
 
@@ -168,7 +179,7 @@ Most code changes do not need an internal documentation change. Agents can read 
 - When a documented decision or constraint changes, rewrite or remove the affected text. Do not append another account of the new behavior. A new internal page needs a distinct, durable reason to exist.
 - `docs/user/` helps users accomplish tasks. Give each major feature a concise section explaining what it does, how to start, and anything unintuitive. A settings path is useful; descriptions of visible buttons, icons, layouts, animations, or every UI state are not. Before adding text, ask what task or decision it helps the user with.
 - Keep user docs in the shipped product's voice, without implementation details or contributor tooling. Update the relevant feature section when how to use it changes. A UI tweak does not need a documentation entry, and a new control does not need its own page.
-- `docs/operations/` holds maintainer setup, release, and debugging procedures. Keep instructions for operating an installed T3 Code server in the user guides.
+- `docs/operations/` holds maintainer setup, release, and debugging procedures. Keep instructions for operating an installed Torch3 server in the user guides.
 
 ## Plans and work artifacts
 

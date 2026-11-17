@@ -9,7 +9,7 @@ body:
     attributes:
       value: |
         Use this form for broken behavior, regressions, crashes, or reliability problems.
-        Feature requests belong in [Discussions](https://github.com/pingdotgg/t3code/discussions/categories/ideas).
+        For an idea, open a blank issue whose title starts with `Idea:`. Bugs that also happen in T3 Code belong upstream.
         Search existing issues first and keep the report focused on one problem.
 
   - type: checkboxes

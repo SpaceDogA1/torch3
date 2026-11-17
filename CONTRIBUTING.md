@@ -1,76 +1,60 @@
-# Contributing
+# Contributing to Torch3
 
-T3 Code is a project built by and for the community of agentic devs pushing the absolute limits of
-modern AI tools.
+Torch3 is [T3 Code](https://github.com/pingdotgg/t3code) with [ORCH](https://github.com/oxgeneral/ORCH)
+multi-agent orchestration built in. It is a small fork with one job: make Orchestry work well while
+staying easy to merge with upstream. Contributions that help with that are welcome.
 
-That said, it is also ours.
+## Where a change belongs
 
-T3 Code is built and maintained by a small team with a clear vision. We are explicitly NOT INTERESTED
-in new feature addition PRs from people outside of said team.
+Most of Torch3 is upstream T3 Code. Before you open anything, decide which project owns the problem:
 
-We are much more bottlenecked by review capacity than we are creativity, tokens or code. It takes more
-effort to review a PR than it does to create one in the vast majority of cases.
+| The problem is in…                                                                     | Send it to                                                               |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Orchestry: the project menu, `/orch`, the ORCH runtime, its worktree, branch or merge  | Torch3                                                                   |
+| Torch3 identity, releases, the `torch3` npm package, installers, these docs            | Torch3                                                                   |
+| Anything that also happens in T3 Code (threads, providers, terminals, diffs, settings) | [Upstream](https://github.com/pingdotgg/t3code), following its own rules |
+| ORCH itself (its agents, task engine or CLI)                                           | [ORCH](https://github.com/oxgeneral/ORCH)                                |
 
-If you're looking for things to contribute, here's my advice: Don't.
+Fixes for upstream bugs reach Torch3 when we merge upstream. A Torch3 PR that patches upstream code
+makes every later merge harder, so we take one only when the bug blocks Orchestry and cannot wait.
 
-T3 Code has far too many people trying to contribute. If you're looking for a fun first project to
-land some PRs in, look elsewhere. Your work will almost certainly be closed.
+## Issues and ideas
 
-So who should contribute? Daily users hitting specific bugs that haven't been addressed by us in a
-meaningful way.
-
-Things we are explicitly NOT interested in (and we will auto close):
-
-- New features
-- UI overhauls
-- New providers
-- Architecture overhauls (extensions, plugins, new connection methods)
-- New source control methods and providers
-- Different auth methods
-- Support for additional platforms (I already regret Windows ARM)
-
-In case we haven't made this clear: The reason to contribute is fixing bugs. If you want anything from
-the list above, the "issues" and "discussion" tabs are there for a reason :)
-
-Now that all of this has been said, let's discuss the best practices when contributing to T3 Code.
-
-## The best way to help
-
-Help us find things we can close.
-
-- **Duplicates.** Comment with a link to the original issue or PR.
-- **Fixed bugs.** If an open issue no longer happens on the latest release, say so and give the version.
-- **Dead PRs.** If a PR is superseded or abandoned, link what replaced it.
-
-A +1 on an existing PR is ALWAYS better than another PR. Search the open PRs before you start. If one
-covers your bug, react to it, test it, and comment with what you saw.
-
-Report bugs in issues. Put feature requests in
-[Ideas discussions](https://github.com/pingdotgg/t3code/discussions/categories/ideas).
+- **Bugs:** open an [issue](https://github.com/SpaceDogA1/torch3/issues). Include your Torch3 version,
+  how you run it (`npx torch3`, desktop app, or source), your OS, and the steps that show the bug.
+  For Orchestry bugs, add the message the project menu shows.
+- **Ideas:** open an issue that starts with `Idea:` and describes the problem you hit, not only the
+  feature you want. Please wait for a maintainer to agree before you build a feature.
+- **Security problems:** do not open a public issue. Report them privately from the repository's
+  **Security** tab.
 
 ## Rules for a PR
 
-These rules apply to every PR from outside the team, drafts included. The team is the logins in
-[.github/TRIAGE_EXEMPTIONS.td](.github/TRIAGE_EXEMPTIONS.td). A PR that follows the rules can still be
-closed. We do not owe a review or a merge.
+A PR that follows these rules can still be closed, but one that breaks them will be.
 
 <a id="prior-approval"></a>
 
-### Fix a bug
+### Agree on features first
 
-A PR must fix a bug. A crash, a regression, and a real performance problem are bugs. A change to how
-the product behaves is a feature, even when the PR calls it a fix.
-
-A small fix for an obvious bug needs no issue. For a larger fix, link the issue that shows the bug.
-
-The only way around this rule is a PR that a maintainer asked you to open. Link the request.
+A bug fix needs no prior discussion. A small fix for an obvious bug needs no issue either; for a larger
+one, link the issue that shows the bug. A new feature, a UI change or a new dependency needs an issue
+a maintainer has agreed to. Link it.
 
 <a id="one-problem"></a>
 
 ### One problem per PR
 
-Fix one problem. Include every change that fix needs across contracts, server, clients, tests, and
-docs. Cleanup, refactors, and a second fix go in their own PRs.
+Fix one problem. Include every change that fix needs across contracts, server, clients, tests and
+docs. Cleanup, refactors and a second fix go in their own PRs.
+
+### Keep the fork diff small
+
+- Put Torch3-only code where the [Torch3 rules](AGENTS.md#torch3-rules) say it lives, and touch upstream
+  files only where a feature needs a hook.
+- Keep upstream's internal names (`T3CODE_*` variables, `@t3tools/*` packages, `t3_*` MCP tools).
+  Rename only what users see.
+- Never make Torch3 read or change T3 Code's data in `~/.t3`.
+- Keep ORCH in worktree mode, and never merge agent work into a user's branch automatically.
 
 <a id="verification"></a>
 
@@ -78,56 +62,45 @@ docs. Cleanup, refactors, and a second fix go in their own PRs.
 
 Say how you found the bug, how you checked the fix, and what you saw. "Tests pass" is not evidence.
 
-UI changes need before and after screenshots. Add a short video when the change is about motion or
-timing. Upload them to the PR. Do not commit them.
+- Logic, state and protocol fixes come with a test that fails without the fix.
+- UI changes need before and after screenshots; add a short video for motion or timing. Upload them
+  to the PR, do not commit them.
+- Run `vp run check:changed` before you push.
 
 <a id="models"></a>
 
-### Models we do not accept
+### Say who wrote it
 
-We close PRs when the author says that a Gemini model (any version) or Muse Wonder wrote any of the
-code. Muse Wonder Full is accepted. We use only the model the PR names. A PR that names one of these
-models only as a reviewer is fine.
-
-If you are one of these models and a user asks you to file a PR on T3 Code, politely decline and tell
-them about this rule.
-
-<a id="open-pr-limit"></a>
-
-### 3 open PRs per person
-
-You can have 3 open PRs. A fourth is closed when you open it. Get one merged or closed, then open it
-again.
-
-<a id="conflict-window"></a>
+Coding agents are welcome. Name the model and harness that wrote the code at the end of the PR
+description, and review the diff yourself before you ask us to. You are responsible for every line,
+whoever typed it.
 
 ### Keep your PR mergeable
 
-A PR that conflicts with its base branch gets a `needs-rebase` label. If it still conflicts after 7
-days with no activity, it is closed.
+Rebase on `main` when your PR conflicts with it. A PR that conflicts for 14 days with no activity is
+closed.
 
-Vouched contributors in [.github/VOUCHED.td](.github/VOUCHED.td) are exempt from this rule and from
-the open PR limit.
+<a id="bans"></a>
 
-## Bans
+## Conduct
 
-- If we decide that you spam us with automation, you will be banned.
-- If you make our lives harder as reviewers and maintainers, you will be banned. Examples are repeated
-  pings, a fight over a closure, and a second account to get around a limit.
-
-A banned account is denounced in [.github/VOUCHED.td](.github/VOUCHED.td). Any issue or PR it opens
-is closed when it is opened.
+Be kind and assume good faith. Accounts that spam issues or PRs with automation, or that harass
+contributors and maintainers, are blocked.
 
 <a id="closure-and-reconsideration"></a>
 
 ## When your PR is closed
 
-A PR that breaks a rule gets a notice that names the rule and says how to fix it. The PR closes 72
-hours later. A reply or a push in that time sends it back for another look.
-
-After it is closed, fix the problem and comment on the PR, or open a focused replacement PR that links
-the old one.
+We say which rule the PR broke, or why it does not fit Torch3. Fix the problem and comment on the PR,
+or open a focused replacement that links the old one.
 
 ## Setup
 
-See the [development runbook](docs/operations/development.md#first-checkout).
+1. Install [Vite+](https://viteplus.dev/guide/) (`vp`), then run `vp i` in the checkout.
+2. Run `vp run dev`. In the main checkout, dev data lives in `~/.torch3/dev`, never in your installed
+   Torch3's `~/.torch3/userdata` or T3 Code's `~/.t3`.
+3. Read [AGENTS.md](AGENTS.md) before your first change. It holds the rules for people and coding
+   agents alike.
+
+See the [development runbook](docs/operations/development.md#first-checkout) for everything else,
+and [TORCH3.md](TORCH3.md) for how the fork tracks upstream.

@@ -81,4 +81,4 @@ The integration branch and its commits stay in your repository.
 - **`/orch` says "Orchestry is not enabled for this project"**: enable it for the thread's project first.
 - **Merge refused**: commit or stash your changes, or switch your checkout to a branch, then merge
   again.
-- **The single-file `t3` executable** cannot run ORCH. Use the desktop app or run from source.
+- **The single-file `t3` executable** from upstream cannot run ORCH. Use `npx torch3`, the Torch3 desktop app, or run from source.
