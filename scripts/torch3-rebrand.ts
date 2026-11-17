@@ -12,6 +12,8 @@ const PATHS = [
   "apps/web/vite.config.ts",
   "apps/desktop/src",
   "apps/server/src/cli",
+  "apps/server/src/cloud/selfUpdate.test.ts",
+  "apps/server/src/persistence/DatabaseMaintenance.ts",
   "apps/server/src/binCli.ts",
   "apps/server/src/serverOwnership.ts",
   "apps/server/src/serverRuntimeStartup.ts",
@@ -24,9 +26,10 @@ const PATHS = [
   "apps/server/src/orchestration-v2/UserFacingErrors.ts",
   "apps/server/src/orchestration-v2/runtimeLayer.test.ts",
   "packages/client-runtime/src",
+  "packages/contracts/src/managedPolicy.ts",
 ];
-// Lines naming upstream itself keep its name.
-const KEEP = /pingdotgg|t3\.codes|T3 Code Nightly|upstream/i;
+// Lines naming upstream itself, install paths and fixture device labels keep their text.
+const KEEP = /pingdotgg|t3\.codes|T3 Code Nightly|upstream|\/opt\/|Mobile/i;
 
 const walk = (target: string): string[] =>
   NodeFS.statSync(target).isFile()
@@ -42,7 +45,11 @@ for (const file of PATHS.flatMap((target) => walk(NodePath.join(root, target))))
   const before = NodeFS.readFileSync(file, "utf8");
   const after = before
     .split("\n")
-    .map((line) => (KEEP.test(line) ? line : line.replaceAll("T3 Code", "Torch3")))
+    .map((line) =>
+      KEEP.test(line)
+        ? line
+        : line.replaceAll("T3 Code", "Torch3").replaceAll("T3%20Code", "Torch3"),
+    )
     .join("\n");
   if (after !== before) {
     NodeFS.writeFileSync(file, after);
