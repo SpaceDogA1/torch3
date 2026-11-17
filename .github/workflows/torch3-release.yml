@@ -92,7 +92,7 @@ jobs:
             release/*.deb
             release/*.exe
             release/*.blockmap
-            release/*.yml
+            release/latest*.yml
           if-no-files-found: error
           retention-days: 7
 

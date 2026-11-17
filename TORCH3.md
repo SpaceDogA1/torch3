@@ -64,7 +64,7 @@ Resolve conflicts with these defaults:
   then read upstream's change and port anything that still applies.
 - **`docs/`**: take upstream's text, then reapply the Torch3 names (`Torch3`, `torch3`, `~/.torch3`)
   and keep the Torch3 notes on upstream-only pages.
-- **Identity files** (`DesktopUserData.ts`, `DesktopEnvironment.ts`, `bootService.ts`, `os-jank.ts`,
+- **Identity files** (`DesktopUserData.ts`, `DesktopEnvironment.ts`, `bootService.ts`, `binCli.ts`, `os-jank.ts`,
   `scripts/build-desktop-artifact.ts`, `scripts/dev-runner.ts`): take upstream's logic, keep Torch3's
   names and paths.
 - **Product name in client and CLI text**: take upstream's side, then run
