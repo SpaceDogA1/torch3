@@ -41,8 +41,8 @@ it.effect.each(["Torch3 (Legacy)"])(
     }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
 );
 
-it.effect.each(["t3code", "T3 Code (Alpha)", "t3code-v2"])(
-  "never adopts T3 Code's %s profile keys on Windows",
+it.effect.each(["t3code", "Torch3 (Alpha)", "t3code-v2"])(
+  "never adopts Torch3's %s profile keys on Windows",
   (sourceName) =>
     Effect.gen(function* () {
       const fs = yield* FileSystem.FileSystem;

@@ -44,6 +44,7 @@ import { SidebarThreadUndoNotice } from "./SidebarThreadUndoNotice";
 import { SidebarProviderUpdatePill } from "./SidebarProviderUpdatePill";
 import { SidebarUpdateArchitectureWarning, SidebarUpdatePill } from "./SidebarUpdatePill";
 import { PullRequestGlyph } from "~/components/pullRequest/pullRequestIcons";
+import { useActiveOrchestrySearch } from "~/components/orchestry/useActiveOrchestrySearch";
 import { observeResize } from "~/lib/observeResize";
 
 export const SidebarChromeHeader = memo(function SidebarChromeHeader({
@@ -223,6 +224,7 @@ function SidebarUtilityItem({
 const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
   const navigate = useNavigate();
   const navigateToMainApp = useNavigateToMainApp();
+  const orchestrySearch = useActiveOrchestrySearch();
   const { isMobile, setOpenMobile } = useSidebar();
   const isOnUtilityPage = useLocation({
     select: (location) => isSidebarUtilityPage(location.pathname),
@@ -247,7 +249,7 @@ const SidebarUtilityMenu = memo(function SidebarUtilityMenu() {
 
   const handleOrchestryClick = () => {
     closeMobileSidebar();
-    void navigate({ to: "/orchestry" });
+    void navigate({ to: "/orchestry", search: orchestrySearch });
   };
 
   const handleUsageClick = () => {

@@ -21,7 +21,7 @@ export class DesktopLegacyLocalStorage extends Context.Service<
 >()("@t3tools/desktop/app/DesktopLegacyLocalStorage") {}
 
 const MARKER_FILE_NAME = "v1-local-storage-imported";
-// Torch3 never imports T3 Code's profiles; only its own former profile name counts.
+// Torch3 never imports Torch3's profiles; only its own former profile name counts.
 const V1_PROFILE_NAMES = ["Torch3 (Legacy)"];
 
 const make = Effect.gen(function* () {

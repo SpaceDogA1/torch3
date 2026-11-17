@@ -100,6 +100,7 @@ import { useAtomValue } from "@effect/atom-react";
 import { isDesktopLocalConnectionTarget } from "../connection/desktopLocal";
 import { useDesktopLocalBootstraps } from "../connection/useDesktopLocalBootstraps";
 import { useHandleNewThread } from "../hooks/useHandleNewThread";
+import { useActiveOrchestrySearch } from "./orchestry/useActiveOrchestrySearch";
 import { useOpenPanelPullRequestUrl } from "../hooks/useOpenPanelPullRequestUrl";
 import { copyThreadReference } from "../lib/copyThreadReference";
 import {
@@ -417,6 +418,7 @@ function OpenCommandPaletteDialog(props: {
   readonly initialContext: CommandPaletteReturnContext | undefined;
 }) {
   const navigate = useNavigate();
+  const orchestrySearch = useActiveOrchestrySearch();
   const pathname = useLocation({ select: (location) => location.pathname });
   const { openChildSearch, setOpen } = props;
   // Keyed by palette session: the intent and restored search only seed this
@@ -1361,7 +1363,7 @@ function OpenCommandPaletteDialog(props: {
       value: "action:triage",
       searchTerms: ["triage", "bug", "issue", "report", "broken", "debug", "help", "support"],
       title: "Triage an issue",
-      description: "An agent investigates a T3 Code problem and helps file an issue",
+      description: "An agent investigates a Torch3 problem and helps file an issue",
       icon: <BugIcon className={ITEM_ICON_CLASS} />,
       run: () => startTriage(triageEnvironmentId),
     });
@@ -1639,7 +1641,7 @@ function OpenCommandPaletteDialog(props: {
     title: "Open Orchestry",
     icon: <WorkflowIcon className={ITEM_ICON_CLASS} />,
     run: async () => {
-      await navigate({ to: "/orchestry" });
+      await navigate({ to: "/orchestry", search: orchestrySearch });
     },
   });
 
@@ -1687,7 +1689,7 @@ function OpenCommandPaletteDialog(props: {
       "openclaw",
       "hermes",
     ],
-    title: "Use T3 Code in another app (MCP)",
+    title: "Use Torch3 in another app (MCP)",
     icon: <PlugIcon className={ITEM_ICON_CLASS} />,
     run: async () => {
       openUseInAnotherApp(

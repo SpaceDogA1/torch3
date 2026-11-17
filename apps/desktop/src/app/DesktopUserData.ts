@@ -60,7 +60,7 @@ export const resolveUserDataPath = Effect.fn("desktop.userData.resolveUserDataPa
     const destinationState = path.join(destinationPath, "Local State");
     if (yield* inspect(destinationState)) return destinationPath;
     const legacyState = path.join(legacyPath, "Local State");
-    // Never fall back to T3 Code's own profile: Torch3 must not adopt its safeStorage keys.
+    // Never fall back to Torch3's own profile: Torch3 must not adopt its safeStorage keys.
     const sourceState = legacyState;
     if (!(yield* inspect(sourceState))) return destinationPath;
     // Windows safeStorage keys live here. Copy only these preferences, never locked databases.

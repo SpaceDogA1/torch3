@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "vp config --no-agent",
     "dev": "node scripts/dev-runner.ts dev",
+    "torch3:rebrand": "node scripts/torch3-rebrand.ts",
     "profile:startup": "node scripts/profile-startup.mjs",
     "dev:share": "node scripts/dev-runner.ts dev --share",
     "dev:server": "node scripts/dev-runner.ts dev:server",

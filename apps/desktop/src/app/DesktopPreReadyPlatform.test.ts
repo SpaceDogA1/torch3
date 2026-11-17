@@ -239,7 +239,7 @@ describe("DesktopPreReadyPlatform", () => {
               DesktopConfig.layerTest({
                 XDG_DATA_HOME: "/xdg",
                 APPIMAGE: "/Applications/current.AppImage",
-                T3CODE_DESKTOP_LAUNCHER_PATH: " /opt/T3 Code/t3code ",
+                T3CODE_DESKTOP_LAUNCHER_PATH: " /opt/Torch3/t3code ",
               }),
             ),
           ),
@@ -247,7 +247,7 @@ describe("DesktopPreReadyPlatform", () => {
         const entry = writeFileSyncMock.mock.calls.find(
           ([path]) => path === "/xdg/applications/dev.torch3.Torch3.desktop",
         )?.[1];
-        assert.include(entry, 'Exec="/opt/T3 Code/t3code" %U');
+        assert.include(entry, 'Exec="/opt/Torch3/t3code" %U');
       }),
     ).pipe(Effect.ensuring(Effect.sync(() => vi.unstubAllEnvs())));
   });

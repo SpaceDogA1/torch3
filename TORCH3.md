@@ -38,7 +38,8 @@ These still behave as upstream does and need Torch3-specific work:
 - Product usage events go to upstream's endpoint (`apps/server/src/telemetry/AnalyticsService.ts`).
 - The desktop app's **Install** command in **Settings → About** installs a `t3` launcher.
 - The mobile app is not rebranded or published.
-- Some server and desktop strings still say "T3 Code".
+- Text the models read (provider instructions, MCP tool descriptions) and some server messages
+  outside the CLI still say "T3 Code".
 
 ## Remotes
 
@@ -66,6 +67,9 @@ Resolve conflicts with these defaults:
 - **Identity files** (`DesktopUserData.ts`, `DesktopEnvironment.ts`, `bootService.ts`, `os-jank.ts`,
   `scripts/build-desktop-artifact.ts`, `scripts/dev-runner.ts`): take upstream's logic, keep Torch3's
   names and paths.
+- **Product name in client and CLI text**: take upstream's side, then run
+  `vp run torch3:rebrand`, which renames "T3 Code" to "Torch3" in the web, desktop,
+  CLI and client-runtime sources and their tests.
 - **`.github/workflows/`**: take upstream's change, then map Blacksmith runner labels back to
   GitHub-hosted ones (`ubuntu-24.04`, `ubuntu-24.04-arm`, `macos-latest`, `windows-2025`).
 

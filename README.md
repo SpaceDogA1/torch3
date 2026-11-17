@@ -4,70 +4,100 @@
 
 <h1 align="center">Torch3</h1>
 
-<p align="center">A fork of <a href="https://github.com/pingdotgg/t3code">T3 Code</a> with multi-agent orchestration built in.</p>
+<p align="center">One prompt, a whole team of coding agents.<br/>
+A fork of <a href="https://github.com/pingdotgg/t3code">T3 Code</a> with
+<a href="https://github.com/oxgeneral/ORCH">ORCH</a> multi-agent orchestration built in.</p>
 
 <p align="center">
-  <a href="./docs/user/orchestry.md"><strong>Orchestry guide</strong></a> ·
-  <a href="./docs/README.md">Docs</a> ·
-  <a href="./docs/operations/development.md">Development</a>
+  <a href="https://www.npmjs.com/package/torch3"><img src="https://img.shields.io/npm/v/torch3?color=f97316&label=npm" alt="npm version" /></a>
+  <a href="https://github.com/SpaceDogA1/torch3/releases/latest"><img src="https://img.shields.io/github/v/release/SpaceDogA1/torch3?color=f97316&label=desktop" alt="Latest release" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" /></a>
 </p>
 
-Torch3 is T3 Code, the open-source control plane for coding agents, plus **Orchestry**: a native
-integration of [ORCH](https://github.com/oxgeneral/ORCH) that lets a team of agents work on a project
-in parallel. T3 stays the interface, auth, transport, and owner of your checkout. ORCH runs the
-agents, tasks, goals, and teams.
+<p align="center">
+  <a href="./docs/user/install.md"><strong>Install</strong></a> ·
+  <a href="./docs/user/orchestry.md"><strong>Orchestry guide</strong></a> ·
+  <a href="./docs/README.md">Docs</a> ·
+  <a href="./CONTRIBUTING.md">Contributing</a>
+</p>
 
-It works with the same agents as T3 Code: Claude Code, Codex, Cursor, OpenCode, Grok Build,
-Antigravity, Kiro, Pi, Muse Code, fx, and any [ACP](./docs/user/providers-acp.md) agent. It drives
-the subscriptions you are already signed in to.
+<p align="center">
+  <img src="./docs/user/images/orchestry-tour.gif" width="860" alt="Enabling Orchestry on a project, then creating a task for its agents" />
+</p>
+
+Torch3 is T3 Code, the open-source control plane for coding agents, plus **Orchestry**: ORCH built
+in, so a team of agents can work on one project in parallel. T3 stays the interface, auth, transport
+and owner of your checkout. ORCH runs the agents, tasks, goals and teams.
+
+It works with the agents you already pay for: Claude Code, Codex, Cursor, OpenCode, Grok Build,
+Antigravity, Kiro, Pi, Muse Code, fx, and any [ACP](./docs/user/providers-acp.md) agent.
+
+## Install
+
+```sh
+npx torch3
+```
+
+That starts Torch3 and opens it in your browser. Node.js 22.16 or newer is required. To keep the
+command around, run `npm install --global torch3`.
+
+Desktop installers for macOS (Apple Silicon), Windows and Linux are on the
+[releases page](https://github.com/SpaceDogA1/torch3/releases/latest). They are not code-signed yet:
+
+- **macOS:** right-click the app, choose **Open**, then confirm once.
+- **Windows:** in the SmartScreen prompt, select **More info**, then **Run anyway**.
+
+Torch3 keeps its data in `~/.torch3`, so it runs beside an installed T3 Code without sharing
+threads, settings or sign-ins. See the [install guide](./docs/user/install.md) for details.
 
 ## Orchestry
 
-- **Per-project teams.** Turn Orchestry on for a project, add agents, and queue tasks. Each agent
+- **Per-project teams.** Turn Orchestry on for a project, add agents and queue tasks. Each agent
   works in its own Git worktree.
 - **Your checkout stays yours.** ORCH merges into a separate `t3-orchestry/<project>` integration
   branch. You review the diff and merge it into your branch yourself.
-- **Where you work.** Open Orchestry from the sidebar, the command palette, or a project's
-  right-click menu. Send `/orch <task>` from any thread to queue work for the team.
-- **Safe by default.** ORCH runs in worktree mode only, never updates itself, and never runs its
+- **Queue from anywhere.** Open Orchestry from the sidebar, the command palette or a project's
+  right-click menu, or send `/orch <task>` from any thread.
+- **Safe by default.** ORCH runs in worktree mode only, never updates itself and never runs its
   install script. Projects that cannot run ORCH say why before you enable it.
-- **Reachable by agents.** Orchestry's reads and actions are exposed as `orchestry_` MCP tools.
+- **Reachable by agents.** Orchestry's reads and actions are `orchestry_` MCP tools.
 
-Read the [Orchestry guide](./docs/user/orchestry.md) to get started, and the
+<p align="center">
+  <img src="./docs/user/images/orch-command.gif" width="860" alt="Sending /orch from a thread queues the task in Orchestry" />
+</p>
+
+A project needs to be the root of its own Git repository with at least one commit. ORCH agents need
+one agent CLI installed and signed in, for example `claude auth login` or `codex login`. Read the
+[Orchestry guide](./docs/user/orchestry.md) to get started, and the
 [integration notes](./docs/internals/orchestry.md) for how it is built.
 
-## Run it
+## Status
 
-Torch3 has no published installers or mobile builds yet. Run it from source:
+| Area                   | State                                                                |
+| ---------------------- | -------------------------------------------------------------------- |
+| Web app and `torch3`   | Released on npm                                                      |
+| Orchestry              | Server, web and MCP tools, tested                                    |
+| Desktop app            | Unsigned installers for macOS, Windows and Linux                     |
+| Mobile app             | Not available; T3 Code's app does not connect to Torch3              |
+| Upstream-only services | T3 Connect, the hosted app and in-app updates are not part of Torch3 |
+
+[TORCH3.md](./TORCH3.md) lists what still behaves as upstream does.
+
+## Develop
 
 ```sh
 vp i
 vp run dev
 ```
 
-`vp` comes from [Vite+](https://viteplus.dev/guide/) and provides the pinned Node version. Open the
-pairing URL the dev runner prints. The [development runbook](./docs/operations/development.md) covers
-the rest, including desktop artifact builds.
-
-To use a project with Orchestry, it must be the root of its own Git repository with at least one
-commit. ORCH agents need one agent CLI installed and signed in, for example `claude auth login` for
-Claude Code or `codex login` for Codex.
-
-## Status
-
-| Area                         | State                                                                   |
-| ---------------------------- | ----------------------------------------------------------------------- |
-| Web and dev server           | Working, with the Torch3 name and flame mark                            |
-| Orchestry (server, web, MCP) | Working and tested                                                      |
-| Desktop app                  | Installer not built yet; its name and macOS/Windows icons are T3 Code's |
-| Mobile app                   | T3 Code's app; no Orchestry views yet                                   |
-| CI                           | Runs on GitHub-hosted runners                                           |
-| Releases                     | Not set up: signing, Expo, and Cloudflare credentials are missing       |
+`vp` comes from [Vite+](https://viteplus.dev/guide/) and provides the pinned Node version. Read
+[CONTRIBUTING.md](./CONTRIBUTING.md) and the
+[development runbook](./docs/operations/development.md) before your first change.
 
 ## Credits
 
 Torch3 is built on [T3 Code](https://t3.codes) by the T3 team and
-[ORCH](https://github.com/oxgeneral/ORCH) by oxgeneral. Created in [T3 Code](https://t3.codes).
+[ORCH](https://github.com/oxgeneral/ORCH) by oxgeneral.
 
 ## License
 

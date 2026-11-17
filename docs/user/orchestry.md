@@ -6,9 +6,12 @@ separate **integration branch**. Nothing reaches your checkout until you merge i
 
 You can reach Orchestry from:
 
-- the **Orchestry** button at the bottom of the sidebar, or the command palette;
+- the **Orchestry** button at the bottom of the sidebar, or the command palette, which open it on
+  the project of the thread you are viewing;
 - a project's right-click menu in the sidebar, which opens Orchestry on that project;
 - the composer: send `/orch` followed by a task to queue it for the project's ORCH team.
+
+![Enabling Orchestry on a project and creating a task](./images/orchestry-tour.gif)
 
 ## Turn it on for a project
 
@@ -39,6 +42,8 @@ agent left uncommitted is lost.
 days of agent runs from ORCH's own history.
 
 ## Queue a task from a thread
+
+![Queuing a task with /orch from a thread](./images/orch-command.gif)
 
 In any thread of a project with Orchestry on, start the message with `/orch`:
 
