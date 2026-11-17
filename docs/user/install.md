@@ -50,6 +50,19 @@ pairing URL to connect to that server. Stop it before starting a replacement, or
 > upstream T3 Code's standalone `t3` launcher, which cannot run Orchestry. Update and remove the
 > npm package with `npm` instead.
 
+### Install from a release file
+
+Each [release](https://github.com/SpaceDogA1/torch3/releases) also carries the npm package as
+`torch3-<version>.tgz`. Install it when you need an exact version or have no access to the npm
+registry:
+
+```bash
+npm install --global ./torch3-<version>.tgz
+torch3
+```
+
+To try it without installing, run `npx --package ./torch3-<version>.tgz torch3`.
+
 ### Run from source
 
 To run the latest code, build it with `vp`, which provides the Node version it needs
@@ -68,18 +81,22 @@ Update it with `git pull` and a rebuild.
 Download the installer for your platform from the
 [Torch3 releases](https://github.com/SpaceDogA1/torch3/releases):
 
-| Platform              | File                          |
-| --------------------- | ----------------------------- |
-| macOS (Apple silicon) | `Torch3-<version>-*.dmg`      |
-| Windows (x64)         | `Torch3-<version>-*.exe`      |
-| Linux (x64)           | `Torch3-<version>-*.AppImage` |
+| Platform              | File                                                          |
+| --------------------- | ------------------------------------------------------------- |
+| Windows (x64)         | `Torch3-<version>-x64.exe`                                    |
+| macOS (Apple silicon) | `Torch3-<version>-arm64.dmg`, or `Torch3-<version>-arm64.zip` |
+| Linux (x64)           | `Torch3-x86_64.AppImage`, or `Torch3-<version>-amd64.deb`     |
+
+There are no builds for Intel Macs or Arm Windows and Linux yet.
 
 The installers are not code-signed yet:
 
 - **macOS:** the first time, right-click Torch3 in Applications and choose **Open**, then
   **Open** again.
-- **Windows:** if SmartScreen appears, choose **More info**, then **Run anyway**.
-- **Linux:** make the AppImage executable, then run it:
+- **Windows:** run the `.exe`. If SmartScreen appears, choose **More info**, then **Run anyway**.
+  It installs for your user only, with no administrator prompt, and adds Torch3 to the Start menu.
+- **Linux:** install the `.deb` with `sudo apt install ./Torch3-*-amd64.deb`, or make the AppImage
+  executable and run it:
 
   ```bash
   chmod +x ./Torch3-*.AppImage
@@ -88,6 +105,13 @@ The installers are not code-signed yet:
 
 Torch3 is not in Homebrew, winget, Scoop, the AUR or nixpkgs. Those packages install upstream
 T3 Code.
+
+### Where the desktop app keeps its data
+
+Threads, projects and settings live in `~/.torch3`, the same folder the `torch3` command uses. The
+desktop window's own browser profile lives in a `torch3` folder under the system's app data:
+`%APPDATA%	orch3` on Windows, `~/Library/Application Support/torch3` on macOS and
+`~/.config/torch3` on Linux. None of these are shared with T3 Code.
 
 ### The `torch3` command
 
@@ -120,6 +144,15 @@ Drag one or more folders from Finder, Explorer, or your file manager onto the
 sidebar. Each one opens as a project on this computer, the same as `torch3 app`.
 Files dropped on a thread still attach to that thread. Browsers do not share
 folder paths, so in the web app use **Add project** instead.
+
+### Uninstall the desktop app
+
+- **Windows:** **Settings → Apps → Installed apps → Torch3 → Uninstall**.
+- **macOS:** quit Torch3 and move it from Applications to the Bin.
+- **Linux:** `sudo apt remove torch3` for the `.deb`, or delete the AppImage.
+
+Uninstalling keeps your threads and settings. To remove them too, delete `~/.torch3` and the
+desktop profile folder listed above. Do not delete `~/.t3`: that is T3 Code's data.
 
 ## Mobile app
 

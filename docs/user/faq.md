@@ -45,7 +45,7 @@ browser over your local network or Tailscale, and pair with `torch3 pair`.
 ## Does it work on Windows, Mac, and Linux?
 
 Yes. There are desktop installers for macOS (Apple silicon), Windows (x64) and Linux (x64
-AppImage), and `npx torch3` runs anywhere Node.js 22.16 or newer does. [Install](./install.md)
+AppImage and `.deb`), and `npx torch3` runs anywhere Node.js 22.16 or newer does. [Install](./install.md)
 
 ## Why does Orchestry refuse my project?
 

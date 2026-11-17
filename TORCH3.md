@@ -39,7 +39,9 @@ These still behave as upstream does and need Torch3-specific work:
 - The desktop app's **Install** command in **Settings → About** installs a `t3` launcher.
 - The mobile app is not rebranded or published.
 - Text the models read (provider instructions, MCP tool descriptions) and some server messages
-  outside the CLI still say "T3 Code".
+  outside the CLI still say "T3 Code". CLI hints still name upstream commands such as `t3 up` and
+  `npx t3`.
+- Desktop installers are unsigned, so macOS cannot update the app in place.
 
 ## Remotes
 
@@ -80,4 +82,5 @@ GitHub-hosted runners before it lands on `main`.
 
 Run the **Torch3 release** workflow with a version, or push a `vX.Y.Z` tag. It builds unsigned
 macOS, Windows and Linux installers, packs `torch3` for npm, creates the GitHub Release, and
-publishes to npm when the `NPM_TOKEN` secret is set.
+publishes to npm. [Releasing Torch3](docs/operations/torch3-release.md) covers the npm token,
+re-runs after a failure, and how to check a release.

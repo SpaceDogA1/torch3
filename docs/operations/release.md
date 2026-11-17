@@ -1,6 +1,7 @@
 # Release Checklist
 
-> For maintainers. Using T3 Code? See [docs/user](../user/).
+> For maintainers. This is upstream T3 Code's pipeline and does not run in Torch3. To ship Torch3,
+> follow [Releasing Torch3](./torch3-release.md).
 
 This document covers the unified release workflow for stable and nightly desktop releases.
 

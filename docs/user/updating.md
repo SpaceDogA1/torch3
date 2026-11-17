@@ -1,11 +1,25 @@
 # Updating Torch3
 
-> [!IMPORTANT]
-> Update Torch3 itself by installing the new release: `npm install --global torch3@latest` (or run
-> `npx torch3@latest`), or download the new desktop installer from the
-> [Torch3 releases](https://github.com/SpaceDogA1/torch3/releases). The in-app server update and
-> `torch3 update` still follow upstream T3 Code's release feed, so do not use them to update a
-> Torch3 server. Provider updates below work as described.
+## Update Torch3 itself
+
+How you update depends on how you installed Torch3:
+
+| Installed with                           | Update with                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------------------- |
+| `npm install --global torch3`            | `npm install --global torch3@latest`                                         |
+| `npx torch3`                             | `npx torch3@latest`                                                          |
+| Windows `.exe`, Linux AppImage or `.deb` | The desktop app's update prompt, or install the new release over the old one |
+| macOS `.dmg` or `.zip`                   | Download the new release and replace the app in Applications                 |
+
+The desktop app checks [Torch3's releases](https://github.com/SpaceDogA1/torch3/releases) for
+updates. macOS cannot install an update into an unsigned app, so Mac users download each release
+by hand until the app is signed. Your threads and settings stay in `~/.torch3` across updates.
+
+> [!WARNING]
+> `torch3 update` and the update offered for a server started with `npx torch3` or
+> `npm install --global torch3` still follow upstream T3 Code's `t3` releases, which cannot run
+> Orchestry. Update those servers with npm, as in the table. A server inside the desktop app updates
+> with the app. Provider updates below work as described.
 
 The app you use and the server running your agents can be on different machines.
 When a server is behind your web or desktop app, the update button at the bottom
@@ -44,6 +58,10 @@ and how many can resume afterwards. See **Continue threads after restarts**
 below.
 
 ## Switch between Stable and Nightly
+
+> [!NOTE]
+> Torch3 publishes stable releases only. Leave **Update track** on **Stable**; a Nightly track has
+> no Torch3 builds to install.
 
 In the desktop app, change **Settings → About → Update track**. Torch3 shows each
 connected machine it will move and each one it skips, then moves them in one

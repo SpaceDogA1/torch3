@@ -75,9 +75,9 @@ one agent CLI installed and signed in, for example `claude auth login` or `codex
 
 | Area                   | State                                                                |
 | ---------------------- | -------------------------------------------------------------------- |
-| Web app and `torch3`   | Released on npm                                                      |
+| Web app and `torch3`   | npm package `torch3`, also attached to each release                  |
 | Orchestry              | Server, web and MCP tools, tested                                    |
-| Desktop app            | Unsigned installers for macOS, Windows and Linux                     |
+| Desktop app            | Unsigned installers; Windows and Linux update themselves             |
 | Mobile app             | Not available; T3 Code's app does not connect to Torch3              |
 | Upstream-only services | T3 Connect, the hosted app and in-app updates are not part of Torch3 |
 
