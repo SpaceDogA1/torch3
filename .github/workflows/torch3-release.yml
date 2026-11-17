@@ -144,6 +144,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.version.outputs.version }}
         run: |
+          # A re-run after a failed npm publish keeps the release already made.
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release v$VERSION already exists; leaving it as is."
+            exit 0
+          fi
           gh release create "v$VERSION" assets/* \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
@@ -164,4 +169,9 @@ jobs:
             echo "::warning::NPM_TOKEN is not set, so torch3@$VERSION was not published to npm."
             exit 0
           fi
-          npm publish "assets/torch3-$VERSION.tgz" --access public
+          if npm view "torch3@$VERSION" version > /dev/null 2>&1; then
+            echo "torch3@$VERSION is already on npm."
+            exit 0
+          fi
+          # The ./ keeps npm from reading the path as a GitHub owner/repo.
+          npm publish "./assets/torch3-$VERSION.tgz" --access public
