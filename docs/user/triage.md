@@ -29,7 +29,7 @@ Code server, so it gives you any restart steps and does not do them itself.
 If the app does not start, or triage does not work in the app, run:
 
 ```sh
-npx torch3 triage
+npx @torch3/cli triage
 ```
 
 It starts Claude Code or Codex in your terminal with the same instructions.

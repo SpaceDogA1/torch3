@@ -6,8 +6,8 @@ How you update depends on how you installed Torch3:
 
 | Installed with                           | Update with                                                                  |
 | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| `npm install --global torch3`            | `npm install --global torch3@latest`                                         |
-| `npx torch3`                             | `npx torch3@latest`                                                          |
+| `npm install --global @torch3/cli`       | `npm install --global @torch3/cli@latest`                                    |
+| `npx @torch3/cli`                        | `npx @torch3/cli@latest`                                                     |
 | Windows `.exe`, Linux AppImage or `.deb` | The desktop app's update prompt, or install the new release over the old one |
 | macOS `.dmg` or `.zip`                   | Download the new release and replace the app in Applications                 |
 
@@ -16,8 +16,8 @@ updates. macOS cannot install an update into an unsigned app, so Mac users downl
 by hand until the app is signed. Your threads and settings stay in `~/.torch3` across updates.
 
 > [!WARNING]
-> `torch3 update` and the update offered for a server started with `npx torch3` or
-> `npm install --global torch3` still follow upstream T3 Code's `t3` releases, which cannot run
+> `torch3 update` and the update offered for a server started with `npx @torch3/cli` or
+> `npm install --global @torch3/cli` still follow upstream T3 Code's `t3` releases, which cannot run
 > Orchestry. Update those servers with npm, as in the table. A server inside the desktop app updates
 > with the app. Provider updates below work as described.
 
@@ -151,7 +151,7 @@ release, the service can stay down after a crash or reboot until you run
 
 If you run the server with `npx` rather than an installed `torch3`, there is
 nothing to update on the host: stop the server and relaunch it as
-`npx torch3@<client-version>` with the same subcommand and options.
+`npx @torch3/cli@<client-version>` with the same subcommand and options.
 
 ## If an update fails
 

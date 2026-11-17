@@ -22,7 +22,7 @@ The websocket layer lets users drive Torch3 from another machine over their loca
 
 ### 4. Multi-surface
 
-Torch3 ships **web** (served by the `torch3` command, `npx torch3`) and **desktop** (Electron, bundling the server). There is no Torch3 mobile app yet; mobile code stays in sync with upstream so one can ship later. Features belong in shared code (`packages/client-runtime`) where both surfaces can use them.
+Torch3 ships **web** (served by the `torch3` command, `npx @torch3/cli`) and **desktop** (Electron, bundling the server). There is no Torch3 mobile app yet; mobile code stays in sync with upstream so one can ship later. Features belong in shared code (`packages/client-runtime`) where both surfaces can use them.
 
 ## On taste
 
@@ -69,7 +69,7 @@ These exist because Torch3 is a fork that must stay mergeable with upstream and 
 3. **Keep the fork diff small.** Torch3-only code lives in `apps/server/src/orchestry/`, `apps/server/src/mcp/toolkits/orchestry/`, `apps/web/src/components/orchestry/`, `packages/client-runtime/src/state/orchestry.ts`, `packages/contracts/src/orchestry.ts`, `scripts/build-torch3-npm.ts` and `.github/workflows/torch3-release.yml`. Touch upstream files only where a feature needs a hook, and keep those edits minimal. See [TORCH3.md](TORCH3.md) for syncing with upstream.
 4. **ORCH stays on a leash.** Worktree mode only, no shared workspace mode. Never merge agent work into the user's branch automatically; merging is an explicit user action. ORCH never updates itself (the pnpm patch stubs its update check) and its install script never runs (`allowBuilds`). Upgrade ORCH only by following [docs/internals/orchestry.md](docs/internals/orchestry.md#upgrading-orch).
 5. **Projects must be their own repository.** Orchestry refuses a folder that is not the root of its own Git repository with a commit, and the UI says why before Enable. Keep that check ahead of anything that would run `orch init`.
-6. **Releases are deliberate.** Releases come from `.github/workflows/torch3-release.yml` (a `vX.Y.Z` tag or a manual run). Installers are unsigned. The npm package is `torch3`, built by `scripts/build-torch3-npm.ts`; it runs on the host Node so ORCH works under `npx`. Never tag, release or publish unless the maintainer asks.
+6. **Releases are deliberate.** Releases come from `.github/workflows/torch3-release.yml` (a `vX.Y.Z` tag or a manual run). Installers are unsigned. The npm package is `@torch3/cli` (npm refuses the bare name `torch3`; the command it installs is `torch3`), built by `scripts/build-torch3-npm.ts`; it runs on the host Node so ORCH works under `npx`. Never tag, release or publish unless the maintainer asks.
 7. **CI runs on GitHub-hosted runners.** Do not reintroduce upstream's Blacksmith runner labels or `useblacksmith/*` actions; jobs would queue forever.
 8. **Windows hosts.** The maintainer develops on Windows. From Git Bash, do not run `cmd //c ...` in a session that also runs the dev server: console control events can stop it. Use PowerShell for links and junctions.
 

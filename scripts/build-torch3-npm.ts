@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // @effect-diagnostics nodeBuiltinImport:off globalConsole:off - A linear, synchronous release step run once in CI.
-// Packs the built server (apps/server/dist, web client included) as the `torch3` npm package.
+// Packs the built server (apps/server/dist, web client included) as the `@torch3/cli` npm package.
+// npm refuses the bare name `torch3` as too close to `touch`; the command it installs is still `torch3`.
 // Unlike upstream's `t3` launcher, which downloads a single-file executable that cannot run ORCH,
-// this package runs on the host Node, so Orchestry works under `npx torch3`.
+// this package runs on the host Node, so Orchestry works under `npx @torch3/cli`.
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -66,7 +67,7 @@ NodeFS.writeFileSync(
   NodePath.join(stageDir, "package.json"),
   `${JSON.stringify(
     {
-      name: "torch3",
+      name: "@torch3/cli",
       version,
       description:
         "Torch3: the open-source control plane for coding agents, with ORCH multi-agent orchestration built in.",
@@ -96,10 +97,11 @@ NodeFS.writeFileSync(
     "multi-agent orchestration built in.",
     "",
     "```sh",
-    "npx torch3",
+    "npx @torch3/cli",
     "```",
     "",
-    "Starts the Torch3 server and opens the web app. Data lives in `~/.torch3`, separate from T3 Code.",
+    "Starts the Torch3 server and opens the web app. Install it with `npm install --global @torch3/cli` to",
+    "run it later as `torch3`. Data lives in `~/.torch3`, separate from T3 Code.",
     "Requires Node.js 22.16 or newer and at least one coding agent CLI signed in.",
     "",
     "Docs: https://github.com/SpaceDogA1/torch3#readme",
@@ -148,4 +150,4 @@ delete orchManifest.scripts?.postinstall;
 NodeFS.writeFileSync(orchManifestPath, `${JSON.stringify(orchManifest, null, 2)}\n`);
 
 run("npm", ["pack", "--pack-destination", outputDir], stageDir);
-console.log(`[torch3-npm] packed torch3@${version} into ${outputDir}`);
+console.log(`[torch3-npm] packed @torch3/cli@${version} into ${outputDir}`);

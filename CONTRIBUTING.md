@@ -11,7 +11,7 @@ Most of Torch3 is upstream T3 Code. Before you open anything, decide which proje
 | The problem is in…                                                                     | Send it to                                                               |
 | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Orchestry: the project menu, `/orch`, the ORCH runtime, its worktree, branch or merge  | Torch3                                                                   |
-| Torch3 identity, releases, the `torch3` npm package, installers, these docs            | Torch3                                                                   |
+| Torch3 identity, releases, the `@torch3/cli` npm package, installers, these docs       | Torch3                                                                   |
 | Anything that also happens in T3 Code (threads, providers, terminals, diffs, settings) | [Upstream](https://github.com/pingdotgg/t3code), following its own rules |
 | ORCH itself (its agents, task engine or CLI)                                           | [ORCH](https://github.com/oxgeneral/ORCH)                                |
 
@@ -21,7 +21,7 @@ makes every later merge harder, so we take one only when the bug blocks Orchestr
 ## Issues and ideas
 
 - **Bugs:** open an [issue](https://github.com/SpaceDogA1/torch3/issues). Include your Torch3 version,
-  how you run it (`npx torch3`, desktop app, or source), your OS, and the steps that show the bug.
+  how you run it (`npx @torch3/cli`, desktop app, or source), your OS, and the steps that show the bug.
   For Orchestry bugs, add the message the project menu shows.
 - **Ideas:** open an issue that starts with `Idea:` and describes the problem you hit, not only the
   feature you want. Please wait for a maintainer to agree before you build a feature.

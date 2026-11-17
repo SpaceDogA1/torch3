@@ -13,16 +13,16 @@ These notes are for maintainers. Users start at the [README](README.md); contrib
 
 ## What differs from upstream
 
-| Area               | Upstream T3 Code                          | Torch3                                                             |
-| ------------------ | ----------------------------------------- | ------------------------------------------------------------------ |
-| Orchestration      | none                                      | Orchestry (project menu, `/orch`, MCP tools)                       |
-| Data folder        | `~/.t3`                                   | `~/.torch3` (`T3CODE_HOME` still overrides)                        |
-| Desktop identity   | `com.t3tools.t3code`, profile `t3code-v2` | `dev.torch3.app`, profile `torch3`, no `t3code://` OS registration |
-| Background service | `t3code` / `com.t3tools.t3code.service`   | `torch3` / `dev.torch3.service`                                    |
-| npm package        | `t3` (downloads a single-file executable) | `torch3` (runs on the host Node, so ORCH works)                    |
-| Releases           | `release.yml` (upstream repository only)  | `torch3-release.yml`: unsigned installers and npm                  |
-| CI runners         | Blacksmith                                | GitHub-hosted                                                      |
-| Docs               | T3 Code                                   | Torch3, with notes where an upstream service is not included       |
+| Area               | Upstream T3 Code                          | Torch3                                                                 |
+| ------------------ | ----------------------------------------- | ---------------------------------------------------------------------- |
+| Orchestration      | none                                      | Orchestry (project menu, `/orch`, MCP tools)                           |
+| Data folder        | `~/.t3`                                   | `~/.torch3` (`T3CODE_HOME` still overrides)                            |
+| Desktop identity   | `com.t3tools.t3code`, profile `t3code-v2` | `dev.torch3.app`, profile `torch3`, no `t3code://` OS registration     |
+| Background service | `t3code` / `com.t3tools.t3code.service`   | `torch3` / `dev.torch3.service`                                        |
+| npm package        | `t3` (downloads a single-file executable) | `@torch3/cli`, command `torch3` (runs on the host Node, so ORCH works) |
+| Releases           | `release.yml` (upstream repository only)  | `torch3-release.yml`: unsigned installers and npm                      |
+| CI runners         | Blacksmith                                | GitHub-hosted                                                          |
+| Docs               | T3 Code                                   | Torch3, with notes where an upstream service is not included           |
 
 Internal names stay upstream's on purpose: `T3CODE_*` variables, `@t3tools/*` packages, `t3_*` MCP
 tools, the in-app `t3code://` scheme and worktree-local `.t3` folders. Renaming them would turn every
@@ -81,6 +81,6 @@ GitHub-hosted runners before it lands on `main`.
 ## Releasing
 
 Run the **Torch3 release** workflow with a version, or push a `vX.Y.Z` tag. It builds unsigned
-macOS, Windows and Linux installers, packs `torch3` for npm, creates the GitHub Release, and
+macOS, Windows and Linux installers, packs `@torch3/cli` for npm, creates the GitHub Release, and
 publishes to npm. [Releasing Torch3](docs/operations/torch3-release.md) covers the npm token,
 re-runs after a failure, and how to check a release.

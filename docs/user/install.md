@@ -19,13 +19,13 @@ Set up the machine where the agents will work first.
 Run Torch3 straight from npm:
 
 ```bash
-npx torch3
+npx @torch3/cli
 ```
 
 This starts the server and opens the web app. To keep the command around, install it globally:
 
 ```bash
-npm install --global torch3
+npm install --global @torch3/cli
 torch3
 ```
 
@@ -35,8 +35,8 @@ torch3
 | Start the server without a browser    | `torch3 serve`                                                              |
 | Pair another browser or device        | `torch3 pair` ([details](./remote-access.md))                               |
 | Reclaim database space                | `torch3 doctor` ([details](./background-service.md#reclaim-database-space)) |
-| Move to the newest release            | `npm install --global torch3@latest`                                        |
-| Remove it again                       | `npm uninstall --global torch3`                                             |
+| Move to the newest release            | `npm install --global @torch3/cli@latest`                                   |
+| Remove it again                       | `npm uninstall --global @torch3/cli`                                        |
 
 Run `torch3 --help` for the full reference. To start in a new working directory, use an explicit
 path such as `torch3 ./my-project`. A bare directory name is accepted only if it already exists.
@@ -53,15 +53,15 @@ pairing URL to connect to that server. Stop it before starting a replacement, or
 ### Install from a release file
 
 Each [release](https://github.com/SpaceDogA1/torch3/releases) also carries the npm package as
-`torch3-<version>.tgz`. Install it when you need an exact version or have no access to the npm
+`torch3-cli-<version>.tgz`. Install it when you need an exact version or have no access to the npm
 registry:
 
 ```bash
-npm install --global ./torch3-<version>.tgz
+npm install --global ./torch3-cli-<version>.tgz
 torch3
 ```
 
-To try it without installing, run `npx --package ./torch3-<version>.tgz torch3`.
+To try it without installing, run `npx --package ./torch3-cli-<version>.tgz torch3`.
 
 ### Run from source
 
@@ -116,7 +116,7 @@ desktop window's own browser profile lives in a `torch3` folder under the system
 ### The `torch3` command
 
 The desktop app can add a command-line tool from **Settings → About**. It currently installs
-upstream's `t3` launcher name; for a Torch3 command, use `npm install --global torch3`.
+upstream's `t3` launcher name; for a Torch3 command, use `npm install --global @torch3/cli`.
 
 ### Windows Subsystem for Linux
 

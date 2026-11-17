@@ -9,7 +9,7 @@ A fork of <a href="https://github.com/pingdotgg/t3code">T3 Code</a> with
 <a href="https://github.com/oxgeneral/ORCH">ORCH</a> multi-agent orchestration built in.</p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/torch3"><img src="https://img.shields.io/npm/v/torch3?color=f97316&label=npm" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/@torch3/cli"><img src="https://img.shields.io/npm/v/@torch3/cli?color=f97316&label=npm" alt="npm version" /></a>
   <a href="https://github.com/SpaceDogA1/torch3/releases/latest"><img src="https://img.shields.io/github/v/release/SpaceDogA1/torch3?color=f97316&label=desktop" alt="Latest release" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" /></a>
 </p>
@@ -35,11 +35,11 @@ Antigravity, Kiro, Pi, Muse Code, fx, and any [ACP](./docs/user/providers-acp.md
 ## Install
 
 ```sh
-npx torch3
+npx @torch3/cli
 ```
 
 That starts Torch3 and opens it in your browser. Node.js 22.16 or newer is required. To keep the
-command around, run `npm install --global torch3`.
+command around, run `npm install --global @torch3/cli`.
 
 Desktop installers for macOS (Apple Silicon), Windows and Linux are on the
 [releases page](https://github.com/SpaceDogA1/torch3/releases/latest). They are not code-signed yet:
@@ -75,7 +75,7 @@ one agent CLI installed and signed in, for example `claude auth login` or `codex
 
 | Area                   | State                                                                |
 | ---------------------- | -------------------------------------------------------------------- |
-| Web app and `torch3`   | npm package `torch3`, also attached to each release                  |
+| Web app and `torch3`   | npm package `@torch3/cli`, also attached to each release             |
 | Orchestry              | Server, web and MCP tools, tested                                    |
 | Desktop app            | Unsigned installers; Windows and Linux update themselves             |
 | Mobile app             | Not available; T3 Code's app does not connect to Torch3              |

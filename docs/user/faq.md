@@ -14,7 +14,7 @@ that plan, build and review it on their own branch.
   `/orch` in the composer. [Orchestry](./orchestry.md)
 - **Its own data.** Torch3 keeps everything in `~/.torch3` and uses its own app ID, so it runs
   beside an installed T3 Code without sharing threads, settings or sign-ins.
-- **Its own releases.** Install with `npx torch3` or the installers on the
+- **Its own releases.** Install with `npx @torch3/cli` or the installers on the
   [Torch3 releases](https://github.com/SpaceDogA1/torch3/releases) page. [Install](./install.md)
 - **No hosted services.** T3 Connect, app.t3.codes and the T3 mobile apps belong to upstream
   T3 Code and do not work with Torch3. Use the local network or Tailscale for remote access.
@@ -45,7 +45,7 @@ browser over your local network or Tailscale, and pair with `torch3 pair`.
 ## Does it work on Windows, Mac, and Linux?
 
 Yes. There are desktop installers for macOS (Apple silicon), Windows (x64) and Linux (x64
-AppImage and `.deb`), and `npx torch3` runs anywhere Node.js 22.16 or newer does. [Install](./install.md)
+AppImage and `.deb`), and `npx @torch3/cli` runs anywhere Node.js 22.16 or newer does. [Install](./install.md)
 
 ## Why does Orchestry refuse my project?
 
