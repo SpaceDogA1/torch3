@@ -22,7 +22,10 @@ A fork of <a href="https://github.com/pingdotgg/t3code">T3 Code</a> with
 </p>
 
 <p align="center">
-  <img src="./docs/user/images/orchestry-tour.gif" width="860" alt="Enabling Orchestry on a project, then creating a task for its agents" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/user/images/screenshots/chat-dark.webp" />
+    <img src="./docs/user/images/screenshots/chat-light.webp" width="900" alt="A Torch3 thread: the agent's plan, the file it read, its changes and a summary with code and a results table" />
+  </picture>
 </p>
 
 Torch3 is T3 Code, the open-source control plane for coding agents, plus **Orchestry**: ORCH built
@@ -63,6 +66,10 @@ threads, settings or sign-ins. See the [install guide](./docs/user/install.md) f
 - **Reachable by agents.** Orchestry's reads and actions are `orchestry_` MCP tools.
 
 <p align="center">
+  <img src="./docs/user/images/orchestry-tour.gif" width="860" alt="Enabling Orchestry on a project, then creating a task for its agents" />
+</p>
+
+<p align="center">
   <img src="./docs/user/images/orch-command.gif" width="860" alt="Sending /orch from a thread queues the task in Orchestry" />
 </p>
 
@@ -71,15 +78,44 @@ one agent CLI installed and signed in, for example `claude auth login` or `codex
 [Orchestry guide](./docs/user/orchestry.md) to get started, and the
 [integration notes](./docs/internals/orchestry.md) for how it is built.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/user/images/screenshots/orchestry-tasks.webp" alt="Orchestry's task list: three tasks with priorities, each assigned to an agent" /></td>
+    <td width="50%"><img src="./docs/user/images/screenshots/orchestry-agents.webp" alt="Orchestry's agents: Agent Creator and Backend builder on Claude Code, Test reviewer on Codex" /></td>
+  </tr>
+  <tr>
+    <td><b>Tasks.</b> Queue work, set priorities and pick the agent for each task.</td>
+    <td><b>Agents.</b> Mix providers in one team; each agent has its own role.</td>
+  </tr>
+  <tr>
+    <td><img src="./docs/user/images/screenshots/orchestry-new-task.webp" alt="The New task dialog with title, description, agent, goal and priority" /></td>
+    <td><img src="./docs/user/images/screenshots/orchestry-review.webp" alt="Orchestry's Review tab: the integration branch, its changed files and a Merge into main button" /></td>
+  </tr>
+  <tr>
+    <td><b>New task.</b> Tie a task to a goal and an agent in one step.</td>
+    <td><b>Review.</b> See what the team changed, then merge it yourself.</td>
+  </tr>
+  <tr>
+    <td><img src="./docs/user/images/screenshots/command-palette.webp" alt="The command palette listing thread, project and Orchestry actions" /></td>
+    <td><img src="./docs/user/images/screenshots/chat-dark.webp" alt="A Torch3 thread in the dark theme" /></td>
+  </tr>
+  <tr>
+    <td><b>Command palette.</b> Every action, one shortcut away (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> <kbd>K</kbd>).</td>
+    <td><b>Light and dark.</b> Torch3 follows your system theme.</td>
+  </tr>
+</table>
+
 ## Status
 
-| Area                   | State                                                                |
-| ---------------------- | -------------------------------------------------------------------- |
-| Web app and `torch3`   | npm package `@torch3/cli`, also attached to each release             |
-| Orchestry              | Server, web and MCP tools, tested                                    |
-| Desktop app            | Unsigned installers; Windows and Linux update themselves             |
-| Mobile app             | Not available; T3 Code's app does not connect to Torch3              |
-| Upstream-only services | T3 Connect, the hosted app and in-app updates are not part of Torch3 |
+| Area                   | State                                                                  |
+| ---------------------- | ---------------------------------------------------------------------- |
+| Web app and `torch3`   | Published on npm as `@torch3/cli`; the package is also on each release |
+| Orchestry              | Server, web and MCP tools, tested                                      |
+| Desktop app            | Unsigned installers; Windows and Linux update themselves               |
+| Mobile app             | Not available; T3 Code's app does not connect to Torch3                |
+| Upstream-only services | T3 Connect, the hosted app and in-app updates are not part of Torch3   |
 
 [TORCH3.md](./TORCH3.md) lists what still behaves as upstream does.
 
