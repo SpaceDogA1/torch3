@@ -149,7 +149,7 @@ it.layer(NodeServices.layer)("DesktopCliCommand", (it) => {
 
       // An app that ran before left its settings or launcher. Its user may have removed torch3 or
       // chosen another, so first launch leaves it to Settings, where Install still works.
-      for (const left of ["userdata/desktop-settings.json", "bin/t3"]) {
+      for (const left of ["userdata/desktop-settings.json", "bin/torch3"]) {
         const upgradedHome = yield* fs.makeTempDirectoryScoped();
         const leftFile = path.join(upgradedHome, ".t3", left);
         yield* fs.makeDirectory(path.dirname(leftFile), { recursive: true });
