@@ -1,7 +1,7 @@
 # Running Torch3 in the background
 
 > [!NOTE]
-> `torch3 service` and `torch3 update` still install and update upstream T3 Code's standalone `t3` launcher, which cannot run Orchestry. Until Torch3 has its own service install, keep `torch3 serve` running under your own process manager, such as a systemd user unit or a scheduled task. T3 Connect is not available in Torch3.
+> `torch3 service install` is not available yet: the service runs a standalone build, which Torch3 does not publish. Keep `torch3 serve` running under your own process manager instead, such as a systemd user unit or a scheduled task. T3 Connect is not available in Torch3.
 
 On Linux, macOS, and Windows, Torch3 can run as a service for your user so you
 do not need to keep a terminal open.

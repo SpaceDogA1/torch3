@@ -1,5 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off globalConsole:off - A one-shot text rewrite run by hand.
-// Renames the product in user-visible client and CLI text from "T3 Code" to "Torch3".
+// Renames the product in user-visible client and CLI text from "T3 Code" to "Torch3", and the
+// `t3` command it names to `torch3` (npx: `@torch3/cli`), so hints never run T3 Code instead.
 // After an upstream merge, take upstream's side of a conflict on such a line and rerun:
 //   vp run torch3:rebrand
 // Provider and MCP text the models read is left to upstream; evals and replay fixtures cover it.
@@ -12,7 +13,12 @@ const PATHS = [
   "apps/web/vite.config.ts",
   "apps/desktop/src",
   "apps/server/src/cli",
+  "apps/server/src/cloud/selfUpdate.ts",
   "apps/server/src/cloud/selfUpdate.test.ts",
+  "apps/server/src/cloud/bootService.ts",
+  "apps/server/src/cloud/CliTokenManager.ts",
+  "apps/server/src/cloud/CloudLink.ts",
+  "apps/server/src/cloud/ConnectReachability.ts",
   "apps/server/src/persistence/DatabaseMaintenance.ts",
   "apps/server/src/binCli.ts",
   "apps/server/src/serverOwnership.ts",
@@ -48,7 +54,13 @@ for (const file of PATHS.flatMap((target) => walk(NodePath.join(root, target))))
     .map((line) =>
       KEEP.test(line)
         ? line
-        : line.replaceAll("T3 Code", "Torch3").replaceAll("T3%20Code", "Torch3"),
+        : line
+            .replaceAll("T3 Code", "Torch3")
+            .replaceAll("T3%20Code", "Torch3")
+            .replaceAll("npx t3", "npx @torch3/cli")
+            .replaceAll("`t3 ", "`torch3 ")
+            .replaceAll("`t3`", "`torch3`")
+            .replaceAll("the t3 command", "the torch3 command"),
     )
     .join("\n");
   if (after !== before) {

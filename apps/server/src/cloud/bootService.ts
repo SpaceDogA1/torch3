@@ -14,7 +14,7 @@ import { CliError } from "effect/cli";
 import { HttpClient } from "effect/http";
 import * as Schema from "effect/Schema";
 
-import { CLI_RELEASE_BASE_URL_ENV } from "@t3tools/shared/cliRelease";
+import { CLI_RELEASE_BASE_URL_ENV, TORCH3_SERVICE_UNAVAILABLE } from "@t3tools/shared/cliRelease";
 
 import * as ProcessRunner from "../processRunner.ts";
 import { acquireServiceSelectionLock } from "./serviceSelectionLock.ts";
@@ -26,6 +26,7 @@ import {
 } from "../serviceLauncher.ts";
 import {
   ensurePinnedRuntimeInstalled,
+  isUnpublishedRelease,
   launcherOwnsVersionsDir,
   pinnedRuntimeCommand,
   pinnedRuntimePaths,
@@ -131,7 +132,7 @@ export function renderBootServiceUnit(plan: BootServicePlan): string {
     // protection of user.slice and user@.service, which only root can grant.
     "MemoryLow=1536M",
     // A user manager's own score, the lowest it may set: below its other services (200) and agents (800).
-    // `t3 service protect` lowers it further through a drop-in.
+    // `torch3 service protect` lowers it further through a drop-in.
     "OOMScoreAdjust=100",
     // systemd-oomd ignores this preference when the watched cgroup is root-owned, as user-1000.slice usually is.
     "ManagedOOMPreference=avoid",
@@ -623,10 +624,12 @@ export class BootServiceCommandError extends Schema.TaggedError<BootServiceComma
     exitCode: Schema.optional(Schema.Number),
     stdoutLength: Schema.optional(Schema.Number),
     stderrLength: Schema.optional(Schema.Number),
+    reason: Schema.optional(Schema.String),
     cause: Schema.optional(Schema.Defect()),
   },
 ) {
   override get message(): string {
+    if (this.reason !== undefined) return this.reason;
     return this.exitCode === undefined
       ? `Background setup failed while ${this.step}.`
       : `Background setup failed while ${this.step} (exit code ${this.exitCode}).`;
@@ -655,8 +658,8 @@ type BootServiceProblem = typeof BootServiceProblem.Type;
 export function formatBootServiceProblem(
   problem: BootServiceProblem,
   commands: { readonly install: string; readonly restart: string } = {
-    install: "t3 service install",
-    restart: "t3 service restart",
+    install: "torch3 service install",
+    restart: "torch3 service restart",
   },
 ): string {
   switch (problem) {
@@ -719,7 +722,7 @@ export class BootServiceOtherBaseDirError extends Schema.TaggedError<BootService
   },
 ) {
   override get message(): string {
-    return `The Torch3 service on this machine serves ${this.installedBaseDir}, not ${this.baseDir}. Pass ${formatBootServiceBaseDirOption(this.installedBaseDir)} to manage it, or run \`t3 service uninstall ${formatBootServiceBaseDirOption(this.installedBaseDir)}\` first to move it; both data directories are kept.`;
+    return `The Torch3 service on this machine serves ${this.installedBaseDir}, not ${this.baseDir}. Pass ${formatBootServiceBaseDirOption(this.installedBaseDir)} to manage it, or run \`torch3 service uninstall ${formatBootServiceBaseDirOption(this.installedBaseDir)}\` first to move it; both data directories are kept.`;
   }
 
   // A refusal the user fixes by rerunning, so the CLI prints the message, not a stack trace.
@@ -1292,6 +1295,7 @@ export const make = Effect.fn("cloud.boot_service.make")(function* (input: {
               exitCode: error.exitCode,
               stdoutLength: error.stdoutLength,
               stderrLength: error.stderrLength,
+              ...(isUnpublishedRelease(error) ? { reason: TORCH3_SERVICE_UNAVAILABLE } : {}),
               cause: error,
             })
           : new BootServiceInstallError({ cause: error }),

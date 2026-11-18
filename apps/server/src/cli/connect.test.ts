@@ -67,7 +67,7 @@ it.layer(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer, NetService.layer))
     it.effect.each([
       { subcommand: "status", hint: "connect link" },
       { subcommand: "publish", hint: "connect login" },
-    ])("t3 connect $subcommand names `t3 $hint` with --base-dir", ({ subcommand, hint }) =>
+    ])("t3 connect $subcommand names `torch3 $hint` with --base-dir", ({ subcommand, hint }) =>
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
         const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-connect-hint-test-" });

@@ -3,7 +3,14 @@ import * as Schema from "effect/Schema";
 
 import { compareSemverVersions } from "./semver.ts";
 
-const CLI_RELEASE_REPOSITORY = "pingdotgg/t3code";
+const CLI_RELEASE_REPOSITORY = "SpaceDogA1/torch3";
+/** Torch3's npm package. Upstream's `t3` package is T3 Code, so never look that one up. */
+export const TORCH3_NPM_PACKAGE = "@torch3/cli";
+// Torch3 releases carry no standalone runtime archives, so only the desktop app updates itself.
+export const TORCH3_SELF_UPDATE_UNAVAILABLE =
+  "Torch3 cannot install server updates itself yet. Run `npm install --global @torch3/cli@latest`, or install the latest desktop app from https://github.com/SpaceDogA1/torch3/releases/latest.";
+export const TORCH3_SERVICE_UNAVAILABLE =
+  "Torch3 cannot install a background service yet: the service runs a standalone build, which Torch3 does not publish. Keep `torch3 serve` running under your own process manager instead.";
 export const CLI_RELEASES_PAGE_URL = `https://github.com/${CLI_RELEASE_REPOSITORY}/releases`;
 export const CLI_RELEASE_CHECKSUMS_FILE = "SHA256SUMS";
 export const CLI_RELEASE_BASE_URL_ENV = "T3CODE_RELEASE_BASE_URL";

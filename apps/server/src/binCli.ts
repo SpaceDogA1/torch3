@@ -70,7 +70,7 @@ const connectUnavailableCommand = Command.make("connect", {
 export const makeCli = ({ cloudEnabled = hasCloudPublicConfig } = {}) =>
   Command.make("torch3", { ...sharedServerCommandFlags }).pipe(
     Command.withDescription(
-      "Run Torch3 in this terminal and open it in your browser. To use it from your other devices, run `t3 up`.",
+      "Run Torch3 in this terminal and open it in your browser. To use it from your other devices, run `torch3 up`.",
     ),
     Command.withHandler(runDefaultServerCommand),
     Command.withSubcommands([

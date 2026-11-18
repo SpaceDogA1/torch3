@@ -156,7 +156,7 @@ function headline(host: string, located: Located, failure: ConnectionAttemptErro
 }
 
 function steps(host: string, located: Located, failure: ConnectionAttemptError | null): string[] {
-  const checkHost = `On ${host}, check Settings > Sharing & access or run \`t3 connect status\`.`;
+  const checkHost = `On ${host}, check Settings > Sharing & access or run \`torch3 connect status\`.`;
   switch (located.cause) {
     case "offline":
       return ["Connect this device to the internet. Torch3 reconnects on its own."];
@@ -171,7 +171,7 @@ function steps(host: string, located: Located, failure: ConnectionAttemptError |
       const approve = code ? `approve the device showing ${code}` : "approve this device";
       return [
         `On a device already connected to ${host}, open Settings > Sharing & access and ${approve}.`,
-        `Or run \`t3 auth connect-device approve ${code ?? "<code>"}\` on ${host}.`,
+        `Or run \`torch3 auth connect-device approve ${code ?? "<code>"}\` on ${host}.`,
       ];
     }
     case "outdated":

@@ -74,7 +74,7 @@ export const runDefaultServerCommand = Effect.fn("server.runDefaultServerCommand
 });
 
 export const startCommand = Command.make("start", { ...sharedServerCommandFlags }).pipe(
-  Command.withDescription("Same as `t3`."),
+  Command.withDescription("Same as `torch3`."),
   Command.unlisted,
   Command.withHandler((flags) => runServerCommand(flags, { rejectRunningServer: true })),
 );
@@ -85,7 +85,7 @@ const { autoBootstrapProjectFromCwd: _, ...serveCommandFlags } = sharedServerCom
 export const serveCommand = Command.make("serve", serveCommandFlags).pipe(
   Command.withShortDescription("Run Torch3 in this terminal, with no browser."),
   Command.withDescription(
-    "Run Torch3 in this terminal without opening a browser, and print pairing details. The background service runs this. To set up access from your other devices, run `t3 up`.",
+    "Run Torch3 in this terminal without opening a browser, and print pairing details. The background service runs this. To set up access from your other devices, run `torch3 up`.",
   ),
   Command.withHandler((flags) =>
     runServerCommand(

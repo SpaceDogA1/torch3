@@ -45,10 +45,10 @@ If `torch3` reports an already running server, run the `torch3 pair` command it 
 pairing URL to connect to that server. Stop it before starting a replacement, or use a different
 `--base-dir` for an independent server.
 
-> [!WARNING]
-> `torch3 update`, `torch3 install`, `torch3 uninstall` and `torch3 service` still manage
-> upstream T3 Code's standalone `t3` launcher, which cannot run Orchestry. Update and remove the
-> npm package with `npm` instead.
+> [!NOTE]
+> `torch3 update`, `torch3 install` and `torch3 service install` need a standalone build, which
+> Torch3 does not publish yet, so they say what to do instead. Update and remove the npm package
+> with `npm`.
 
 ### Install from a release file
 
@@ -110,13 +110,17 @@ T3 Code.
 
 Threads, projects and settings live in `~/.torch3`, the same folder the `torch3` command uses. The
 desktop window's own browser profile lives in a `torch3` folder under the system's app data:
-`%APPDATA%	orch3` on Windows, `~/Library/Application Support/torch3` on macOS and
+`%APPDATA%\torch3` on Windows, `~/Library/Application Support/torch3` on macOS and
 `~/.config/torch3` on Linux. None of these are shared with T3 Code.
 
 ### The `torch3` command
 
-The desktop app can add a command-line tool from **Settings → About**. It currently installs
-upstream's `t3` launcher name; for a Torch3 command, use `npm install --global @torch3/cli`.
+The desktop app adds a `torch3` command for its bundled server, and **Settings → About** shows
+where. To get the command without the desktop app, run `npm install --global @torch3/cli`.
+
+Desktop builds before 0.1.2 named this command `t3`, which can run instead of an installed T3 Code.
+Delete it if you have one: `%USERPROFILE%\.torch3\bin\t3.cmd` on Windows, or the `t3` link in
+`~/.local/bin` or `~/bin` that points into `~/.torch3/bin` on macOS and Linux.
 
 ### Windows Subsystem for Linux
 

@@ -32,15 +32,18 @@ upstream merge into a conflict.
 
 These still behave as upstream does and need Torch3-specific work:
 
-- `torch3 update`, `install`, `uninstall` and `service`, and the in-app server update, follow
-  upstream's `t3` release feed (`apps/server/src/cli/update.ts`, `apps/server/src/cloud/npmRelease.ts`).
-- Triage files issues on `pingdotgg/t3code` (`apps/server/src/triage/triagePrompt.ts`).
-- Product usage events go to upstream's endpoint (`apps/server/src/telemetry/AnalyticsService.ts`).
-- The desktop app's **Install** command in **Settings → About** installs a `t3` launcher.
+- Servers installed with npm cannot update themselves. `torch3 update` and the in-app server update
+  need standalone runtime archives (`t3-<version>-<platform>` plus `SHA256SUMS`) on a release, which
+  `torch3-release.yml` does not build, so they stop with `TORCH3_SELF_UPDATE_UNAVAILABLE`
+  (`packages/shared/src/cliRelease.ts`). The release source and npm lookups already point at
+  Torch3, so they never fetch T3 Code. The desktop app updates itself.
+- `torch3 install` works only from a standalone build, so it is unavailable for the same reason. The
+  desktop app installs a `torch3` launcher instead.
+- Product usage telemetry is off by default, because its endpoint is upstream's
+  (`apps/server/src/telemetry/AnalyticsService.ts`).
 - The mobile app is not rebranded or published.
 - Text the models read (provider instructions, MCP tool descriptions) and some server messages
-  outside the CLI still say "T3 Code". CLI hints still name upstream commands such as `t3 up` and
-  `npx t3`.
+  outside the CLI still say "T3 Code". Change it only with the [evals](evals/README.md).
 - Desktop installers are unsigned, so macOS cannot update the app in place.
 
 ## Remotes
@@ -70,8 +73,11 @@ Resolve conflicts with these defaults:
   `scripts/build-desktop-artifact.ts`, `scripts/dev-runner.ts`): take upstream's logic, keep Torch3's
   names and paths.
 - **Product name in client and CLI text**: take upstream's side, then run
-  `vp run torch3:rebrand`, which renames "T3 Code" to "Torch3" in the web, desktop,
-  CLI and client-runtime sources and their tests.
+  `vp run torch3:rebrand`, which renames "T3 Code" to "Torch3" and the `t3` command in hints to
+  `torch3` (`npx @torch3/cli`) in the web, desktop, CLI and client-runtime sources and their tests.
+- **Release and package names** (`packages/shared/src/cliRelease.ts`, `cli/invocation.ts`,
+  `cloud/npmRelease.ts`, `apps/desktop/src/app/DesktopCli*.ts`, `triage/`): keep `SpaceDogA1/torch3`,
+  `@torch3/cli` and the `torch3` launcher name. Upstream's names here make Torch3 fetch or run T3 Code.
 - **`.github/workflows/`**: take upstream's change, then map Blacksmith runner labels back to
   GitHub-hosted ones (`ubuntu-24.04`, `ubuntu-24.04-arm`, `macos-latest`, `windows-2025`).
 

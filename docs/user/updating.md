@@ -15,11 +15,11 @@ The desktop app checks [Torch3's releases](https://github.com/SpaceDogA1/torch3/
 updates. macOS cannot install an update into an unsigned app, so Mac users download each release
 by hand until the app is signed. Your threads and settings stay in `~/.torch3` across updates.
 
-> [!WARNING]
-> `torch3 update` and the update offered for a server started with `npx @torch3/cli` or
-> `npm install --global @torch3/cli` still follow upstream T3 Code's `t3` releases, which cannot run
-> Orchestry. Update those servers with npm, as in the table. A server inside the desktop app updates
-> with the app. Provider updates below work as described.
+> [!NOTE]
+> A server started with `npx @torch3/cli` or `npm install --global @torch3/cli` cannot update itself
+> yet: `torch3 update` and the **Update server** button say so instead of updating. Update those
+> servers with npm, as in the table. A server inside the desktop app updates with the app. Provider
+> updates below work as described.
 
 The app you use and the server running your agents can be on different machines.
 When a server is behind your web or desktop app, the update button at the bottom
@@ -136,18 +136,13 @@ The offered action depends on how the server runs:
 On the host, run:
 
 ```sh
-torch3 update <client-version>
+npm install --global @torch3/cli@<client-version>
 ```
 
-Replace `<client-version>` with the version shown in the notice. The command
-asks before restarting the background service; if you decline, run
-`torch3 service restart` when you are ready. For a server you started by hand,
-stop it and start it again afterwards with your usual options such as `--host`
-or `--tailscale-serve`.
-
-If you decline the restart for a background service installed by an older
-release, the service can stay down after a crash or reboot until you run
-`torch3 service restart`.
+Replace `<client-version>` with the version shown in the notice. Then run
+`torch3 service restart` for a background service, or stop a server you started
+by hand and start it again with your usual options such as `--host` or
+`--tailscale-serve`.
 
 If you run the server with `npx` rather than an installed `torch3`, there is
 nothing to update on the host: stop the server and relaunch it as

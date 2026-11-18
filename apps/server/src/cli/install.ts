@@ -43,7 +43,7 @@ const standaloneRuntime = Effect.gen(function* () {
   return Option.some({ executable, versionsDir, runtimeDir });
 });
 
-/** Installs this runtime as the `t3` command the way the install scripts do, replacing only our own launcher. */
+/** Installs this runtime as the `torch3` command the way the install scripts do, replacing only our own launcher. */
 export const installCli = Effect.fn("cli.install.install")(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -53,18 +53,16 @@ export const installCli = Effect.fn("cli.install.install")(function* () {
   const runtime = yield* standaloneRuntime;
   const windows = platform === "win32";
   if (Option.isNone(runtime)) {
-    const script = windows
-      ? "irm https://t3.codes/install.ps1 | iex"
-      : "curl -fsSL https://t3.codes/install.sh | sh";
     return yield* new CliInstallError({
-      reason: `Only the standalone t3 can install itself. Use \`${script}\`, or Settings in the desktop app.`,
+      reason:
+        "Only a standalone build can install itself, and Torch3 does not publish one yet. Run `npm install --global @torch3/cli`, or use Settings in the desktop app.",
     });
   }
   const { executable, versionsDir, runtimeDir } = runtime.value;
   // cmd.exe expands `%` and reads the shim in the OEM code page, so such a path would not run.
   if (windows && /[%\u0080-\uffff]/.test(executable)) {
     return yield* new CliInstallError({
-      reason: `A t3.cmd cannot run ${executable}, because the path has % or non-ASCII characters. Keep using npx t3.`,
+      reason: `A t3.cmd cannot run ${executable}, because the path has % or non-ASCII characters. Keep using npx @torch3/cli.`,
     });
   }
   // Absolute, so the PATH hint never adds a folder that changes with the working directory.
@@ -196,7 +194,7 @@ const reportInstalled = Effect.fn("cli.install.report")(function* (
       `Another t3 at ${installed.shadowedBy} runs first, so run ${installed.link} to use this one.`,
     );
   }
-  if (installed.onPath) return yield* Console.log("Run `t3` to get started.");
+  if (installed.onPath) return yield* Console.log("Run `torch3` to get started.");
   if (installed.pathCommand === undefined) {
     return yield* Console.log(`Add ${installed.binDir} to your PATH, then run \`t3\`.`);
   }
@@ -205,15 +203,15 @@ const reportInstalled = Effect.fn("cli.install.report")(function* (
       `${installed.binDir} is not on your PATH yet. In this PowerShell window, run:`,
     );
     yield* Console.log(`  ${installed.pathCommand}`);
-    return yield* Console.log("Then run `t3`. For new windows, add the folder to your PATH.");
+    return yield* Console.log("Then run `torch3`. For new windows, add the folder to your PATH.");
   }
   yield* Console.log(`${installed.binDir} is not on your PATH yet. Add it with:`);
   yield* Console.log(`  ${installed.pathCommand}`);
-  yield* Console.log("Then open a new terminal and run `t3`.");
+  yield* Console.log("Then open a new terminal and run `torch3`.");
 });
 
 export const installCommand = Command.make("install").pipe(
-  Command.withDescription("Install this version as the `t3` command."),
+  Command.withDescription("Install this version as the `torch3` command."),
   Command.withHandler(() => installCli().pipe(Effect.flatMap(reportInstalled))),
 );
 
@@ -259,7 +257,7 @@ export const isForegroundPs = (output: string) => {
 };
 
 /**
- * A background job (`npx t3 serve &`) that reads the terminal is stopped by the shell, so only
+ * A background job (`npx @torch3/cli serve &`) that reads the terminal is stopped by the shell, so only
  * the terminal's foreground process group may prompt. Unknown counts as background.
  */
 export const inTerminalForeground = Effect.gen(function* () {
@@ -286,7 +284,7 @@ export const inTerminalForeground = Effect.gen(function* () {
 });
 
 /**
- * Before a command run through npx, pnpm dlx, or bunx at a terminal, asks to install the `t3`
+ * Before a command run through npx, pnpm dlx, or bunx at a terminal, asks to install the `torch3`
  * command. Yes is the default. No, no answer, or a failed install is saved in the T3 home until
  * the next minor release. Returns false when the user quits the prompt, so the command does not run.
  */
@@ -367,7 +365,7 @@ export const offerCliInstall = Effect.fn("cli.install.offer")(function* <E, R, E
 
 export const confirmCliInstall = Prompt.run(
   Prompt.Confirm({
-    message: "Install the t3 command? Then you can run `t3` directly.",
+    message: "Install the torch3 command? Then you can run `torch3` directly.",
     initial: true,
   }),
 ).pipe(Effect.catchTags({ QuitError: () => Effect.void }));

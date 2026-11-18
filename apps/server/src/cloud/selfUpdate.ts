@@ -25,6 +25,7 @@ import {
   CLI_RELEASE_BASE_URL_ENV,
   cliReleaseChannelOf,
   crossesReleaseTrack,
+  TORCH3_SELF_UPDATE_UNAVAILABLE,
 } from "@t3tools/shared/cliRelease";
 
 import packageJson from "../../package.json" with { type: "json" };
@@ -80,7 +81,7 @@ export class ServerSelfUpdate extends Context.Service<
 /**
  * A server starting from the runtime its launcher settled on means runtimes left by earlier
  * updates can go. The boot service says so through its IPC context. The SSH launcher and the
- * install script's `t3` start this home's pinned runtime directly, without one.
+ * install script's `torch3` start this home's pinned runtime directly, without one.
  */
 export const pruneRuntimesOnStart = Effect.fn("cloud.server_self_update.prune_on_start")(
   function* (input: { readonly baseDir: string; readonly managed: boolean }) {
@@ -198,14 +199,14 @@ export const make = Effect.fn("cloud.server_self_update.make")(function* () {
         );
       }
       return yield* failWith(
-        "This server is managed by the T3 Code desktop app on its machine; update the desktop app to update it.",
+        "This server is managed by the Torch3 desktop app on its machine; update the desktop app to update it.",
       );
     }
     // The target must accept the launcher that will run it, which can be older than this server.
     const launcherProtocol = launcher.protocol;
     if (capability === null || launcherProtocol === undefined) {
       return yield* failWith(
-        "Remote updates require the T3 Code background service. Run `t3 service install` on the server machine.",
+        "Remote updates require the Torch3 background service. Run `torch3 service install` on the server machine.",
       );
     }
 
@@ -311,6 +312,9 @@ export const make = Effect.fn("cloud.server_self_update.make")(function* () {
               `${mirror.organization}'s update mirror has no t3@${targetVersion} for this machine.`,
               error,
             );
+          }
+          if (mirror === undefined && isUnpublishedRelease(error)) {
+            return failWith(TORCH3_SELF_UPDATE_UNAVAILABLE, error);
           }
           const downloadFailure = [
             error.httpStatus === undefined ? undefined : `HTTP ${error.httpStatus}`,
